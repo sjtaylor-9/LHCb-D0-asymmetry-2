@@ -1,19 +1,9 @@
 # Measuring the Production Asymmetry between $D^0$ and  $\bar{D}^0$ mesons due to proton-proton collisions at the LHCb
-This project is aimed to calculating the production asymmetry of the $D^0$ meson. This is done in differents regions of the phase space spanned by the transverse momentum ($p_T$) and pseudorapidity ($\eta$) of the $D^0$ meson. This is the current version (7th December) of the code and the predominent focus has been to implement a binned fit in order to increase run time speeds by 2-3 orders of magnitude. This repository will be updated throughout the next 5 months. The project was done in collaboration with Laxman Seelan.
+This project is aimed to calculating the production asymmetry of the $D^0$ meson. This is done in differents regions of the phase space spanned by the transverse momentum ($p_T$) and pseudorapidity ($\eta$) of the $D^0$ meson. This is the current version (2nd February) of the cod. The project was done in collaboration with Laxman Seelan.
 
 In this repository there are the necessary tools in order to:
- - Make a selection of the events given a certain criteria,
- - Remove multiple candidates,
- - Perform a global fit on the data using either a binned or unbinned simultaneous extended maximum likelihood fit,
- - Produce a global model using the global fit fit parameters ,
- - Create a uniform binning across the phase space - ($p_T, \eta$) and individual $p_T$, $\eta$ binning schemes,
- - Perform a local fit in each of the phase space bins, by using a simultaneous extended maximum likelihood fit and plotting,
- - Process the results and output them with relevant figures,
- - Calculate production Asymmetry: Integrated and Average over the binning scheme bins,
- - Plot the asymmetry in the bins of ($p_T, \eta$),
- - Plot Asymmetry against $p_T$ and $\eta$.
+  - (in progress)
 
-Note that if this program is to be used with a different set of data, the file *selection_of_events.py* will need to be modified, and other modifications may be required as well. If phase space is changed, the plotting of Asymmetry and create and apply binning scheme python files may need to be changed.
 
 **Warnings:**
 While running the code be aware that any change to one of the scripts can lead to a malfunction. In addition, make sure that the directories that will be generated while running the program don't already exist. If they do exist beforehand, this program might not work as intended. ```model_fitting``` produces a segmentation violation, however this bug does not affect the code.
@@ -24,7 +14,7 @@ In order to download this package you can use the following commands in your ter
 mkdir ProductionAsymmetry
 cd ProductionAsymmetry
 git init
-git clone git@github.com:sjtaylor-9/LHCb-D0-asymmetry.git
+git clone git@github.com:sjtaylor-9/LHCb-D0-asymmetry-2.git
 git pull origin main
 ```
 
@@ -45,4 +35,4 @@ This should produce the same output as shown in the folder *example* (still to b
 A large amount of the scripts uses or is inspired by the code written by Camille Jarvis-Stiggants and Michael England during their MPhys project and Marc Oriol Pérez in his summer internship.
 
 
-**Authors:** Sam Taylor (samuel.taylor-9@student.manchester.ac.uk) and Laxman Seelan (laxman.seelan@student.manchester.ac.uk)/ **Last modified:** 7th December 2023
+**Authors:** Sam Taylor (samuel.taylor-9@student.manchester.ac.uk) and Laxman Seelan (laxman.seelan@student.manchester.ac.uk)/ **Last modified:** 2nd February 2024
