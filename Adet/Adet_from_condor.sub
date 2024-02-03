@@ -1,0 +1,54 @@
+# everything is relative to location of this .sub file:
+executable              = Adet_from_condor.sh
+
+
+# do some setup:
+universe                = vanilla
+getenv                  = True  # this asks it to activate my_env conda environment
+
+
+# arguments which are passed to the executable so that you can submit multiple jobs at once,
+# in order in the .sh:      $1         $2           $3              $4              $5        $6
+arguments               = $(year) $(polarity) $(n_estimators) $(learning_rate) $(max_depth) $(args)
+
+
+# whatever you list here gets sent to the CPU(s) with the job details
+# if you try to use a script which isnt listed here you will get an error
+# that the file cannot be found
+transfer_input_files    = /afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/reweight_control_modes.py, /afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/plot_reweighted_control_modes.py, /afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/fit_control_modes.py
+
+# these are important for debugging. failures get sent to error
+# make sure the path/to/logs/ directory exists beforehand
+log                     = /afs/cern.ch/work/s/sjtaylor/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/logs/condor_$(year)_$(polarity)_$(n_estimators)_$(learning_rate)_$(max_depth)$(args).log
+output                  = /afs/cern.ch/work/s/sjtaylor/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/logs/output_$(year)_$(polarity)_$(n_estimators)_$(learning_rate)_$(max_depth)$(args).txt
+error                   = /afs/cern.ch/work/s/sjtaylor/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/logs/errors_$(year)_$(polarity)_$(n_estimators)_$(learning_rate)_$(max_depth)$(args).txt
+should_transfer_files   = Yes
+when_to_transfer_output = ON_EXIT
+
+
+# Use +JobFlavour to speficy the maximum run time you expect
+# your jobs to take. If your jobs exceed this time they will be
+# killed and you have to start over. However, the more time you
+# allocate, the futher down the queue your jobs will be placed.
+#   espresso: 20 minutes
+#   microcentury: 1 hour
+#   longlunch: = 2 hours
+#   workday: 8 hours
+#   tomorrow: 1 day
+#   testmatch: 3 days
+#   nextweek: 1 week
++JobFlavour             = "espresso"
+
+
+# to receive emails when jobs finish/fail:
+notify_user             = samuel.taylor-9@student.manchester.ac.uk
+notification            = Always
+
+
+# here is where you list the jobs you want to submit.
+# these should match your arguments definition above
+queue year, polarity, n_estimators, learning_rate, max_depth, args from (
+    2016, magdown, 500, 0.1, 4, --small-kpipi
+)
+# if there are no arguments i.e. you just want to submit one job, it would be simply:
+#   queue
