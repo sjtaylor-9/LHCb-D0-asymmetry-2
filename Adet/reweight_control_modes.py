@@ -107,8 +107,8 @@ kpi["piplus_pz"] = kpi["piplus_pT"] / (np.tan(2 * np.arctan(np.exp(-(kpi["piplus
 print(f"writing to {str(output_directory)}...")
 outfile = ur.recreate(f"{str(output_directory)}/data.root")
 branches = {column: ak.type(kpi[column]) for column in kpi.fields}
-outfile.mktree(f"RS_DT", branches)
-outfile[f"RS_DT"].extend({branch: kpi[branch] for branch in branches.keys()})
+outfile.mktree(f"D02Kpi_Tuple/DecayTree", branches)
+outfile[f"D02Kpi_Tuple/DecayTree"].extend({branch: kpi[branch] for branch in branches.keys()})
 outfile.close()
 ##############################################################################################################################
 ##############################################################################################################################
