@@ -12,7 +12,7 @@
 python3 reweight_control_modes.py \
 --year $1 --polarity $2 --n-estimators $3 --learning-rate $4 --max-depth $5 $6 \
 --input /eos/lhcb/user/l/lseelan/Total/selected_data/${1}/${2:3:4}/both/:D02Kpi_Tuple/DecayTree \
---output-directory /afs/cern.ch/work/s/sjtaylor/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/Detection_Asym/$1/$2/${6:2:5}/$3/$4/$5/
+--output-directory /afs/cern.ch/work/s/sjtaylor/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/$1/$2/${6:2:5}/$3/$4/$5/
 # this produces some new data files in the specified output directory
 # of kpipi and kspi with the generated weights (data.root and temp_**.root)
 
