@@ -5,6 +5,7 @@ In this repository there are the necessary tools in order to:
   - (in progress)
 
 The ```environment.yaml``` file inclues all of the necessary python libraries needed, apart from LHCbStyle, which can be installed using: ```mamba install -c conda-forge lhcbstyle```. 
+
 **Warnings:**
 While running the code be aware that any change to one of the scripts can lead to a malfunction. In addition, make sure that the directories that will be generated while running the program don't already exist. If they do exist beforehand, this program might not work as intended. ```model_fitting.py``` produces a segmentation violation, however this bug does not affect the code.
 
