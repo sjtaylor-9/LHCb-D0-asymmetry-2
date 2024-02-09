@@ -9,7 +9,7 @@ The ```environment.yaml``` file inclues all of the necessary python libraries ne
 **Warnings:**
 
 While running the code be aware that any change to one of the scripts can lead to a malfunction. In addition, make sure that the directories that will be generated while running the program don't already exist. If they do exist beforehand, this program might not work as intended. ```model_fitting.py``` produces a segmentation violation, however this bug does not affect the code.
-In the event that condor does not recognise ```utils.py``` as a library import, it can be added to conda envrionment as a pip module as ```pip install -e utils```.
+In the event that condor does not recognise ```utils.py``` as a library import, it can be added to a conda envrionment as a pip module by ```pip install -e utils```.
 
 ## How to download
 In order to download this package you can use the following commands in your terminal:
