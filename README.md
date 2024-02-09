@@ -40,4 +40,4 @@ This should produce the same output as shown in the folder *example* (still to b
 A large amount of the scripts uses or is inspired by the code written by Camille Jarvis-Stiggants and Michael England during their MPhys project and Marc Oriol Pérez in his summer internship.
 
 
-**Authors:** Sam Taylor (samuel.taylor-9@student.manchester.ac.uk) and Laxman Seelan (laxman.seelan@student.manchester.ac.uk)/ **Last modified:** 2nd February 2024
+**Authors:** Sam Taylor (samuel.taylor-9@student.manchester.ac.uk) and Laxman Seelan (laxman.seelan@student.manchester.ac.uk)/ **Last modified:** 9th February 2024
