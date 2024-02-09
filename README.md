@@ -1,12 +1,12 @@
-# Measuring the Production Asymmetry between $D^0$ and  $\bar{D}^0$ mesons due to proton-proton collisions at the LHCb
+# Measuring the Production Asymmetry between $D^0$ and  $\bar{D}^0$ mesons due to proton-proton collisions at \sqrt{s} = 13 TeV at the LHCb
 This project is aimed to calculating the production asymmetry of the $D^0$ meson. This is done in differents regions of the phase space spanned by the transverse momentum ($p_T$) and pseudorapidity ($\eta$) of the $D^0$ meson. This is the current version (2nd February) of the cod. The project was done in collaboration with Laxman Seelan.
 
 In this repository there are the necessary tools in order to:
   - (in progress)
 
-
+The ```environment.yaml``` file inclues all of the necessary python libraries needed, apart from LHCbStyle, which can be installed using: ```mamba install -c conda-forge lhcbstyle```. 
 **Warnings:**
-While running the code be aware that any change to one of the scripts can lead to a malfunction. In addition, make sure that the directories that will be generated while running the program don't already exist. If they do exist beforehand, this program might not work as intended. ```model_fitting``` produces a segmentation violation, however this bug does not affect the code.
+While running the code be aware that any change to one of the scripts can lead to a malfunction. In addition, make sure that the directories that will be generated while running the program don't already exist. If they do exist beforehand, this program might not work as intended. ```model_fitting.py``` produces a segmentation violation, however this bug does not affect the code.
 
 ## How to download
 In order to download this package you can use the following commands in your terminal:
@@ -19,6 +19,8 @@ git pull origin main
 ```
 
 ## How to use
+A miniforge environment can be created with the libraries from ```ennvironment.yaml``` installed using ```mamba env create -f environment.yaml -n D0-asymmetry```.
+
 The different scripts can be run individually (note that a different set of arguments is required for each), or as a whole using the bash script *main.sh*.
 In order to use *main.sh* 4 arguments are required. These are:
 - The path where the output should be written
