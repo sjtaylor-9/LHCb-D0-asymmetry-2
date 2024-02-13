@@ -2,9 +2,9 @@
 executable              = Adet_from_condor.sh
 
 
-# do some setup:
+# do some setup; getenv asks it to activate my_env conda environment
 universe                = vanilla
-getenv                  = True  # this asks it to activate my_env conda environment
+getenv                  = True
 
 
 # arguments which are passed to the executable so that you can submit multiple jobs at once,
@@ -19,9 +19,9 @@ transfer_input_files    = /afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_a
 
 # these are important for debugging. failures get sent to error
 # make sure the path/to/logs/ directory exists beforehand
-log                     = /afs/cern.ch/work/s/sjtaylor/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/logs/condor_$(year)_$(polarity)_$(n_estimators)_$(learning_rate)_$(max_depth)$(args).log
-output                  = /afs/cern.ch/work/s/sjtaylor/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/logs/output_$(year)_$(polarity)_$(n_estimators)_$(learning_rate)_$(max_depth)$(args).txt
-error                   = /afs/cern.ch/work/s/sjtaylor/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/logs/errors_$(year)_$(polarity)_$(n_estimators)_$(learning_rate)_$(max_depth)$(args).txt
+log                     = /afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/logs/condor_$(year)_$(polarity)_$(n_estimators)_$(learning_rate)_$(max_depth)$(args).log
+output                  = /afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/logs/output_$(year)_$(polarity)_$(n_estimators)_$(learning_rate)_$(max_depth)$(args).txt
+error                   = /afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/logs/errors_$(year)_$(polarity)_$(n_estimators)_$(learning_rate)_$(max_depth)$(args).txt
 should_transfer_files   = Yes
 when_to_transfer_output = ON_EXIT
 
@@ -32,12 +32,12 @@ when_to_transfer_output = ON_EXIT
 # allocate, the futher down the queue your jobs will be placed.
 #   espresso: 20 minutes
 #   microcentury: 1 hour
-#   longlunch: = 2 hours
+#   longlunch: 2 hours
 #   workday: 8 hours
 #   tomorrow: 1 day
 #   testmatch: 3 days
 #   nextweek: 1 week
-+JobFlavour             = "espresso"
++JobFlavour             = "testmatch"
 
 
 # to receive emails when jobs finish/fail:

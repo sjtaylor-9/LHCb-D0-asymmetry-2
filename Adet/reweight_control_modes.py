@@ -94,12 +94,12 @@ kpi["kminus_px"] = kpi["kminus_pT"] * np.cos(kpi["kminus_phi"])
 kpi["kminus_py"] = kpi["kminus_pT"] * np.sin(kpi["kminus_phi"])
 kpi["kminus_pz"] = kpi["kminus_pT"] / (np.tan(2 * np.arctan(np.exp(-(kpi["kminus_eta"])))))
 kpi["kminus_p"] = np.sqrt(np.power(kpi["kminus_px"], 2) + np.power(kpi["kminus_py"], 2) + np.power(kpi["kminus_pz"], 2))
-kpi["piplus_pT"] = kpi["P2_PT"]
+kpi["piplus_pt"] = kpi["P2_PT"]
 kpi["piplus_eta"] = kpi["P2_ETA"]
 kpi["piplus_phi"] = kpi["P2_PHI"]
-kpi["piplus_px"] = kpi["piplus_pT"] * np.cos(kpi["piplus_phi"])
-kpi["piplus_py"] = kpi["piplus_pT"] * np.sin(kpi["piplus_phi"])
-kpi["piplus_pz"] = kpi["piplus_pT"] / (np.tan(2 * np.arctan(np.exp(-(kpi["piplus_eta"])))))
+kpi["piplus_px"] = kpi["piplus_pt"] * np.cos(kpi["piplus_phi"])
+kpi["piplus_py"] = kpi["piplus_pt"] * np.sin(kpi["piplus_phi"])
+kpi["piplus_pz"] = kpi["piplus_pt"] / (np.tan(2 * np.arctan(np.exp(-(kpi["piplus_eta"])))))
 
 
 
@@ -107,8 +107,8 @@ kpi["piplus_pz"] = kpi["piplus_pT"] / (np.tan(2 * np.arctan(np.exp(-(kpi["piplus
 print(f"writing to {str(output_directory)}...")
 outfile = ur.recreate(f"{str(output_directory)}/data.root")
 branches = {column: ak.type(kpi[column]) for column in kpi.fields}
-outfile.mktree(f"D02Kpi_Tuple/DecayTree", branches)
-outfile[f"D02Kpi_Tuple/DecayTree"].extend({branch: kpi[branch] for branch in branches.keys()})
+outfile.mktree(f"DecayTree", branches)
+outfile[f"DecayTree"].extend({branch: kpi[branch] for branch in branches.keys()})
 outfile.close()
 ##############################################################################################################################
 ##############################################################################################################################
