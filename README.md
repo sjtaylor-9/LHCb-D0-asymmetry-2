@@ -1,12 +1,16 @@
-# Measuring the Production Asymmetry between $D^0$ and  $\bar{D}^0$ mesons due to proton-proton collisions at the LHCb
-This project is aimed to calculating the production asymmetry of the $D^0$ meson. This is done in differents regions of the phase space spanned by the transverse momentum ($p_T$) and pseudorapidity ($\eta$) of the $D^0$ meson. This is the current version (2nd February) of the cod. The project was done in collaboration with Laxman Seelan.
+# Measuring the Production Asymmetry between $D^0$ and  $\bar{D}^0$ mesons due to proton-proton collisions at \sqrt{s} = 13 TeV at the LHCb
+This project is aimed to calculating the production asymmetry of the $D^0$ meson. This is done in differents regions of the phase space spanned by the transverse momentum ($p_T$) and pseudorapidity ($\eta$) of the $D^0$ meson. This is the current version (9th February) of the code. The project was done in collaboration with Laxman Seelan.
 
 In this repository there are the necessary tools in order to:
   - (in progress)
 
+```environment.yaml``` includes all of the necessary python libraries needed, apart from ```LHCbStyle```, which can be installed using: ```mamba install -c conda-forge lhcbstyle```. 
 
 **Warnings:**
-While running the code be aware that any change to one of the scripts can lead to a malfunction. In addition, make sure that the directories that will be generated while running the program don't already exist. If they do exist beforehand, this program might not work as intended. ```model_fitting``` produces a segmentation violation, however this bug does not affect the code.
+
+While running the code be aware that any change to one of the scripts can lead to a malfunction. In addition, make sure that the directories that will be generated while running the program don't already exist. If they do exist beforehand, this program might not work as intended. ```model_fitting.py``` produces a segmentation violation, however this bug does not affect the code.
+In the event that condor does not recognise ```utils.py``` as a library import, it can be added to a conda envrionment as a pip module by ```pip install -e utils```.
+```fit_control_modes.py``` returns an error for versions of ```root``` later than 6.28.0. If the conda environment used uses ```environment.yaml``` in this repository, then this error will be avoided.
 
 ## How to download
 In order to download this package you can use the following commands in your terminal:
@@ -19,6 +23,8 @@ git pull origin main
 ```
 
 ## How to use
+A miniforge environment containing the libraries from ```ennvironment.yaml``` can be created using ```mamba env create -f environment.yaml -n D0-asymmetry```.
+
 The different scripts can be run individually (note that a different set of arguments is required for each), or as a whole using the bash script *main.sh*.
 In order to use *main.sh* 4 arguments are required. These are:
 - The path where the output should be written
@@ -35,4 +41,4 @@ This should produce the same output as shown in the folder *example* (still to b
 A large amount of the scripts uses or is inspired by the code written by Camille Jarvis-Stiggants and Michael England during their MPhys project and Marc Oriol Pérez in his summer internship.
 
 
-**Authors:** Sam Taylor (samuel.taylor-9@student.manchester.ac.uk) and Laxman Seelan (laxman.seelan@student.manchester.ac.uk)/ **Last modified:** 2nd February 2024
+**Authors:** Sam Taylor (samuel.taylor-9@student.manchester.ac.uk) and Laxman Seelan (laxman.seelan@student.manchester.ac.uk)/ **Last modified:** 9th February 2024
