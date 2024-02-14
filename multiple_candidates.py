@@ -6,7 +6,7 @@ The year of interest, size of the data and polarity to be analysed must be speci
 It outputs the data for each into 3 seperate root files, one containing only D0 events, another containing only D0bar, and the third containing all events.
 This code is heavily inspired on the work of Camille Jarvis-Stiggants and Michael England. The minor modifications to the original code have simply added flexibility to it by Marc Oriol Pérez
 
-Author: Laxman Seelan (laxman.seelan@student.manchester.ac.uk)
+Author: Laxman Seelan (laxman.seelan@student.manchester.ac.uk) and Sam Taylor (samuel.taylor-9@student.manchester.ac.uk)
 Last edited: 15th September 2023
 """
 
