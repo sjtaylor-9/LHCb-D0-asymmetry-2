@@ -1,13 +1,11 @@
 """
-multiple_candidates.py
+multiple_candidates_pythia.py
 
-This code is used to chech which events have multiple candidates, and for those that do one of the candidates is selected at random, while the others are removed.
-The year of interest, size of the data and polarity to be analysed must be specified using the required flags --year --size --polarity. There is a fourth flag --path, which is not required. This one is used to specify the directory where the input data is located, and where the output file should be written. By default it is set to be the current working directory.
-It outputs the data for each into 3 seperate root files, one containing only D0 events, another containing only D0bar, and the third containing all events.
-This code is heavily inspired on the work of Camille Jarvis-Stiggants and Michael England. The minor modifications to the original code have simply added flexibility to it by Marc Oriol Pérez
+This code reads in the outputted .csv file from runpythia.cpp. The .csv file contains the simulated event information, specifically the event number, PID number and the associated values of the transverse momentum (pT) and rapidity(y).
+The script applys selection criteria so that only simulated events that have 0 < pT < 10 GeV/c and 0 < y < 6 are accepted. In addition events that are multiple candidates (have the same event number) are removed.
 
-Author: Laxman Seelan (laxman.seelan@student.manchester.ac.uk)
-Last edited: 15th September 2023
+Author: Sam Taylor (samuel.taylor-9@student.manchester.ac.uk) and Laxman Seelan (laxman.seelan@student.manchester.ac.uk)
+Last edited: 15th February 2024
 """
 
 # - - - - - - IMPORT STATEMENTS - - - - - - #
@@ -41,22 +39,27 @@ def parse_arguments():
     return parser.parse_args()
 
 def read_from_file():
-    '''
-    Opens a .txt file and reads the values of the event information.
-    
-    Returns the data in the .txt file into an array.
-    '''
+    """
+    Opens a .csv file and reads the values of the event information.
+    Returns the data in the .csv file into an array.
+
+    Returns:
+        data (array): An array containging the simulated events information.
+    """
     data = np.genfromtxt('/afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/pythia_hadronisation/pythia_hadronisation68.csv', delimiter = ',', skip_header = 1)
     
     return data
 
 def remove_multiple_candidates(data):
     """
+    This function removes events that contain multiple candidates, which is determined when candidates have the same event number.
+    Unlike the multiple candidates script for the real data, all multiple candidate events are relinquished. This is because we are not limited by the amount of data since we can just increase the simulated sample size.
     
     Args:
+        data (array): Array containing the pythia simulated data that has passed the selection criteria.
 
     Returns:
-        _type_: _description_
+        no_multiple_candidates (array): Array containing the simulated events that do not have multiple candidates.
     """
     # Count occurrences of each unique event number in the first column of the simulation data.
     event_number = [row[0] for row in data]
@@ -74,17 +77,20 @@ def selection_criteria(raw_data):
     This function imposes the pT and rapidity (y) selection criteria on the simulated events.
     The requirements are that: 0 < pT < 10 GeV/c,
                                0 < y < 6.
-    
+                               
     The selection requirements are imposed by using mask arrays. The combined mask is applied to the original data array to extract only the rows that meet both conditions. 
     This is done using array indexing, where only the rows corresponding to True values in the mask are selected, effectively filtering out the rows that don't satisfy the conditions.
     
+    pT (array): A subset of raw_data including only the 3rd column, which is the data for pT.
+    rapidity (array): A subset of raw_data including only the 4th column, which is the data for rapidity.
+    mask_pT (boolean array): A boolean array the same length as pT where the corresponding elements have values of True or False depending on if they meet the pT selection criteria.
+    mask_rapidity (boolean array): A boolean array the same length as rapidity where the corresponding elements have values of True or False depending on if they meet the rapidity selection criteria.
+    combined_mask (boolean array): A boolean array with the value of True only if there are corresponding values of True in the mask_pT and mask_rapidity arrays.
+    
     Args:
         raw_data (array): Array containing the raw pythia simulated data.
-        pT (array): A subset of raw_data including only the 3rd column, which is the data for pT.
-        rapidity (array): A subset of raw_data including only the 4th column, which is the data for rapidity.
-        mask_pT (boolean array): A boolean array the same length as pT where the corresponding elements have values of True or False depending on if they meet the pT selection criteria.
-        mask_rapidity (boolean array): A boolean array the same length as rapidity where the corresponding elements have values of True or False depending on if they meet the rapidity selection criteria.
-        combined_mask (boolean array): A boolean array with the value of True only if there are corresponding values of True in the mask_pT and mask_rapidity arrays.
+
+    Returns:
         filtered_data (array): The new event data array where events are only appended to this array if they have met the selection criteria.
     """
     
@@ -115,8 +121,15 @@ def dir_path(string):
     else:
         raise NotADirectoryError(string)
 
-def save_file2(D0, D0bar, both, path):
-    """_summary_
+def save_file(D0, D0bar, both, path):
+    """
+    Saves the selected simulated data into three .csv files: one each for D0 and D0bar mesons, and one for both mesons.
+
+    Args:
+        D0 (array): The simulated D0 mesons that meet all of the criteria.
+        D0bar (array): The simulated D0bar mesons that meet all of the criteria.
+        both (array): Array containing the pythia simulated data that has passed the selection and multiple candidate requirements.
+        path (string): The file path parsed in the path parser.
     """
     filenames = [f'{path}/D0_clean_pythia_data.csv', f'{path}/D0bar_clean_pythia_data.csv', f'{path}/clean_pythia_data.csv']
     data_list = [D0, D0bar, both]
@@ -132,10 +145,12 @@ def split_meson(data):
     of the decay (D0, D0bar, any).
 
     Args:
-        data (_type_): _description_
+        data (array): Array containing the pythia simulated data that has passed the selection and multiple candidate requirements.
 
     Returns:
-        _type_: _description_
+        D0_data (array): The simulated D0 mesons that meet all of the criteria.
+        D0bar_data (array): The simulated D0bar mesons that meet all of the criteria.
+        data (array): Array containing the pythia simulated data that has passed the selection and multiple candidate requirements.
     """
     length = len(data)
     PID = data[:, 1]
@@ -147,7 +162,7 @@ def split_meson(data):
     mask_D0 = np.logical_and(mask, PID==421)
     mask_D0bar = np.logical_and(mask, PID==-421)
     
-    # split the simulated particles into mesons and antimesons
+    # split the simulated particles into mesons and antimesons.
     D0_data = data[mask_D0]
     D0bar_data = data[mask_D0bar]
 
@@ -158,8 +173,6 @@ def split_meson(data):
 # - - - - - - - MAIN BODY - - - - - - - #
 
 args=parse_arguments()
-
-np.random.seed(482022) # implemented 04/08/2022
 
 # Import data from Pythia.
 pythia_data = read_from_file()
@@ -172,4 +185,4 @@ if len(pythia_data) > 0:
     print(f"The number of simulated D0 mesons are {len(D0_DATA)}")
     print(f"The number of simulated D0bar mesons are {len(D0BAR_DATA)}")
 #     save_all(args.year, args.size) # output data
-    save_file2(D0_DATA, D0BAR_DATA, cut_data, args.path)
+    save_file(D0_DATA, D0BAR_DATA, cut_data, args.path)
