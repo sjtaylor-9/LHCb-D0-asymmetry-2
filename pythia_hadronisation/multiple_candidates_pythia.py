@@ -35,7 +35,6 @@ def parse_arguments():
         default=os.getcwd(),
         help="flag to set the path where the output files should be written to"
     )
-    
     return parser.parse_args()
 
 def read_from_file():
