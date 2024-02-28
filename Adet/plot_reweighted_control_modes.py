@@ -111,12 +111,13 @@ def kpipi_reweighter(kpi, kpipi, kw_args):
     gs = fig.add_gridspec(5, 3, height_ratios=[4, 1, 1, 4, 1], hspace=0.1) # middle row is used as a spacer and so not used
 
     # kaon momentum
+    kpi["kminus_p"] = np.sqrt(np.power(kpi["kminus_px"], 2) + np.power(kpi["kminus_py"], 2) + np.power(kpi["kminus_pz"], 2))
     ax1 = fig.add_subplot(gs[0, 0])
     ax2 = fig.add_subplot(gs[1, 0], sharex=ax1)
     ran = (0,1e5)
     before, *_ = ax1.hist(kpipi["kminus_p"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})K^{\mp}$", **kw_args);
     after, *_ = ax1.hist(kpipi["kminus_p"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})K^{\mp}$ w.", weights=kpipi["weight"], **kw_args);
-    target, edges, *_ = ax1.hist(kpi["kminus_p"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})K^{\mp}$", weights=kpi["sWeight"], **kw_args);
+    target, edges, *_ = ax1.hist(kpi["kminus_p"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})K^{\mp}$", **kw_args);
     plt.setp(ax1.get_xticklabels(), visible=False)
     target_to_before_ratio = [target[i]/before[i] for i in range(kw_args["bins"])]
     target_to_after_ratio = [target[i]/after[i] for i in range(kw_args["bins"])]
@@ -128,15 +129,14 @@ def kpipi_reweighter(kpi, kpipi, kw_args):
     ax2.set_ylim(0.8,1.2)
     ax2.set_xlabel(r"$p$ [MeV/$c$]")
     ax2.set_ylabel(r"$K\pi/K\pi\pi$")
-
-
+    
     # kaon pseudorapidity
     ax3 = fig.add_subplot(gs[0, 1])
     ax4 = fig.add_subplot(gs[1, 1], sharex=ax3)
     ran = (1.8,5)
     before, *_ = ax3.hist(kpipi["kminus_eta"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})K^{\mp}$", **kw_args);
     after, *_ = ax3.hist(kpipi["kminus_eta"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})K^{\mp}$ w.", weights=kpipi["weight"], **kw_args);
-    target, edges, *_ = ax3.hist(kpi["kminus_eta"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})K^{\mp}$", weights=kpi["sWeight"], **kw_args);
+    target, edges, *_ = ax3.hist(kpi["kminus_eta"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})K^{\mp}$", **kw_args);
     plt.setp(ax3.get_xticklabels(), visible=False)
     target_to_before_ratio = [target[i]/before[i] for i in range(kw_args["bins"])]
     target_to_after_ratio = [target[i]/after[i] for i in range(kw_args["bins"])]
@@ -156,7 +156,7 @@ def kpipi_reweighter(kpi, kpipi, kw_args):
     ran = (-np.pi,np.pi)
     before, *_ = ax5.hist(kpipi["kminus_phi"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})K^{\mp}$", **kw_args);
     after, *_ = ax5.hist(kpipi["kminus_phi"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})K^{\mp}$ w.", weights=kpipi["weight"], **kw_args);
-    target, edges, *_ = ax5.hist(kpi["kminus_phi"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})K^{\mp}$", weights=kpi["sWeight"], **kw_args);
+    target, edges, *_ = ax5.hist(kpi["kminus_phi"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})K^{\mp}$", **kw_args);
     plt.setp(ax5.get_xticklabels(), visible=False)
     target_to_before_ratio = [target[i]/before[i] for i in range(kw_args["bins"])]
     target_to_after_ratio = [target[i]/after[i] for i in range(kw_args["bins"])]
@@ -176,7 +176,7 @@ def kpipi_reweighter(kpi, kpipi, kw_args):
     ran = (0,1e4)
     before, *_ = ax7.hist(kpipi["piplus_pt"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})\pi^{\pm}$", **kw_args);
     after, *_ = ax7.hist(kpipi["piplus_pt"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})\pi^{\pm}$ w.", weights=kpipi["weight"], **kw_args);
-    target, edges, *_ = ax7.hist(kpi["piplus_pt"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})\pi^{\pm}$", weights=kpi["sWeight"], **kw_args);
+    target, edges, *_ = ax7.hist(kpi["piplus_pt"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})\pi^{\pm}$", **kw_args);
     plt.setp(ax7.get_xticklabels(), visible=False)
     target_to_before_ratio = [target[i]/before[i] for i in range(kw_args["bins"])]
     target_to_after_ratio = [target[i]/after[i] for i in range(kw_args["bins"])]
@@ -196,7 +196,7 @@ def kpipi_reweighter(kpi, kpipi, kw_args):
     ran = (1.8,5)
     before, *_ = ax9.hist(kpipi["piplus_eta"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})\pi^{\pm}$", **kw_args);
     after, *_ = ax9.hist(kpipi["piplus_eta"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})\pi^{\pm}$ w.", weights=kpipi["weight"], **kw_args);
-    target, edges, *_ = ax9.hist(kpi["piplus_eta"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})\pi^{\pm}$", weights=kpi["sWeight"], **kw_args);
+    target, edges, *_ = ax9.hist(kpi["piplus_eta"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})\pi^{\pm}$", **kw_args);
     plt.setp(ax9.get_xticklabels(), visible=False)
     target_to_before_ratio = [target[i]/before[i] for i in range(kw_args["bins"])]
     target_to_after_ratio = [target[i]/after[i] for i in range(kw_args["bins"])]
@@ -216,7 +216,7 @@ def kpipi_reweighter(kpi, kpipi, kw_args):
     ran = (-np.pi,np.pi)
     before, *_ = ax11.hist(kpipi["piplus_phi"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})\pi^{\pm}$", **kw_args);
     after, *_ = ax11.hist(kpipi["piplus_phi"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})\pi^{\pm}$ w.", weights=kpipi["weight"], **kw_args);
-    target, edges, *_ = ax11.hist(kpi["piplus_phi"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})\pi^{\pm}$", weights=kpi["sWeight"], **kw_args);
+    target, edges, *_ = ax11.hist(kpi["piplus_phi"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})\pi^{\pm}$", **kw_args);
     plt.setp(ax11.get_xticklabels(), visible=False)
     target_to_before_ratio = [target[i]/before[i] for i in range(kw_args["bins"])]
     target_to_after_ratio = [target[i]/after[i] for i in range(kw_args["bins"])]
@@ -241,12 +241,13 @@ def kpipi_reweighter(kpi, kpipi, kw_args):
     gs = fig.add_gridspec(5, 3, height_ratios=[4, 1, 1, 4, 1], hspace=0.1) # middle row is used as a spacer and so not used
 
     # kaon px
+    kpi["kminus_px"] = kpi["kminus_pt"] * np.cos(kpi["kminus_phi"])
     ax1 = fig.add_subplot(gs[0, 0])
     ax2 = fig.add_subplot(gs[1, 0], sharex=ax1)
     ran = (0,1e4)
     before, *_ = ax1.hist(kpipi["kminus_px"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})K^{\mp}$", **kw_args);
     after, *_ = ax1.hist(kpipi["kminus_px"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})K^{\mp}$ w.", weights=kpipi["weight"], **kw_args);
-    target, edges, *_ = ax1.hist(kpi["kminus_px"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})K^{\mp}$", weights=kpi["sWeight"], **kw_args);
+    target, edges, *_ = ax1.hist(kpi["kminus_px"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})K^{\mp}$", **kw_args);
     plt.setp(ax1.get_xticklabels(), visible=False)
     target_to_before_ratio = [target[i]/before[i] for i in range(kw_args["bins"])]
     target_to_after_ratio = [target[i]/after[i] for i in range(kw_args["bins"])]
@@ -261,12 +262,13 @@ def kpipi_reweighter(kpi, kpipi, kw_args):
 
 
     # kaon py
+    kpi["kminus_py"] = kpi["kminus_pt"] * np.sin(kpi["kminus_phi"])
     ax3 = fig.add_subplot(gs[0, 1])
     ax4 = fig.add_subplot(gs[1, 1], sharex=ax3)
     ran = (0,1e4)
     before, *_ = ax3.hist(kpipi["kminus_py"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})K^{\mp}$", **kw_args);
     after, *_ = ax3.hist(kpipi["kminus_py"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})K^{\mp}$ w.", weights=kpipi["weight"], **kw_args);
-    target, edges, *_ = ax3.hist(kpi["kminus_py"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})K^{\mp}$", weights=kpi["sWeight"], **kw_args);
+    target, edges, *_ = ax3.hist(kpi["kminus_py"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})K^{\mp}$", **kw_args);
     plt.setp(ax3.get_xticklabels(), visible=False)
     target_to_before_ratio = [target[i]/before[i] for i in range(kw_args["bins"])]
     target_to_after_ratio = [target[i]/after[i] for i in range(kw_args["bins"])]
@@ -281,13 +283,14 @@ def kpipi_reweighter(kpi, kpipi, kw_args):
 
 
     # kaon pz
+    kpi["kminus_pz"] = kpi["kminus_pt"] / (np.tan(2 * np.arctan(np.exp(-(kpi["kminus_eta"])))))
     ax5 = fig.add_subplot(gs[0, 2])
     ax6 = fig.add_subplot(gs[1, 2], sharex=ax5)
     ran = (-np.pi,np.pi)
     ran = (0,1e5)
     before, *_ = ax5.hist(kpipi["kminus_pz"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})K^{\mp}$", **kw_args);
     after, *_ = ax5.hist(kpipi["kminus_pz"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})K^{\mp}$ w.", weights=kpipi["weight"], **kw_args);
-    target, edges, *_ = ax5.hist(kpi["kminus_pz"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})K^{\mp}$", weights=kpi["sWeight"], **kw_args);
+    target, edges, *_ = ax5.hist(kpi["kminus_pz"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})K^{\mp}$", **kw_args);
     plt.setp(ax5.get_xticklabels(), visible=False)
     target_to_before_ratio = [target[i]/before[i] for i in range(kw_args["bins"])]
     target_to_after_ratio = [target[i]/after[i] for i in range(kw_args["bins"])]
@@ -302,12 +305,13 @@ def kpipi_reweighter(kpi, kpipi, kw_args):
 
 
     # pion px
+    kpi["piplus_px"] = kpi["piplus_pt"] * np.cos(kpi["piplus_phi"])
     ax7 = fig.add_subplot(gs[3, 0])
     ax8 = fig.add_subplot(gs[4, 0], sharex=ax7)
     ran = (0,1e4)
     before, *_ = ax7.hist(kpipi["piplus_px"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})\pi^{\pm}$", **kw_args);
     after, *_ = ax7.hist(kpipi["piplus_px"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})\pi^{\pm}$ w.", weights=kpipi["weight"], **kw_args);
-    target, edges, *_ = ax7.hist(kpi["B_DTF_P2_PX"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})\pi^{\pm}$", weights=kpi["sWeight"], **kw_args);
+    target, edges, *_ = ax7.hist(kpi["piplus_px"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})\pi^{\pm}$", **kw_args);
     plt.setp(ax7.get_xticklabels(), visible=False)
     target_to_before_ratio = [target[i]/before[i] for i in range(kw_args["bins"])]
     target_to_after_ratio = [target[i]/after[i] for i in range(kw_args["bins"])]
@@ -322,12 +326,13 @@ def kpipi_reweighter(kpi, kpipi, kw_args):
 
 
     # pion py
+    kpi["piplus_py"] = kpi["piplus_pt"] * np.sin(kpi["piplus_phi"])
     ax9 = fig.add_subplot(gs[3, 1])
     ax10 = fig.add_subplot(gs[4, 1], sharex=ax9)
     ran = (0,1e4)
     before, *_ = ax9.hist(kpipi["piplus_py"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})\pi^{\pm}$", **kw_args);
     after, *_ = ax9.hist(kpipi["piplus_py"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})\pi^{\pm}$ w.", weights=kpipi["weight"], **kw_args);
-    target, edges, *_ = ax9.hist(kpi["B_DTF_P2_PY"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})\pi^{\pm}$", weights=kpi["sWeight"], **kw_args);
+    target, edges, *_ = ax9.hist(kpi["piplus_py"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})\pi^{\pm}$", **kw_args);
     plt.setp(ax9.get_xticklabels(), visible=False)
     target_to_before_ratio = [target[i]/before[i] for i in range(kw_args["bins"])]
     target_to_after_ratio = [target[i]/after[i] for i in range(kw_args["bins"])]
@@ -342,12 +347,13 @@ def kpipi_reweighter(kpi, kpipi, kw_args):
     
 
     # pion pz
+    kpi["piplus_pz"] = kpi["piplus_pt"] / (np.tan(2 * np.arctan(np.exp(-(kpi["piplus_eta"])))))
     ax11 = fig.add_subplot(gs[3, 2])
     ax12 = fig.add_subplot(gs[4, 2], sharex=ax11)
     ran = (0,1e5)
     before, *_ = ax11.hist(kpipi["piplus_pz"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})\pi^{\pm}$", **kw_args);
     after, *_ = ax11.hist(kpipi["piplus_pz"], range=ran, label=r"$(D^{\pm} \rightarrow K^{\mp}\pi^{\pm}\pi^{\pm})\pi^{\pm}$ w.", weights=kpipi["weight"], **kw_args);
-    target, edges, *_ = ax11.hist(kpi["B_DTF_P2_PZ"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})\pi^{\pm}$", weights=kpi["sWeight"], **kw_args);
+    target, edges, *_ = ax11.hist(kpi["piplus_pz"], range=ran, histtype="step", linewidth=5, label=r"$(D^{0} \rightarrow K^{\mp}\pi^{\pm})\pi^{\pm}$", **kw_args);
     plt.setp(ax11.get_xticklabels(), visible=False)
     target_to_before_ratio = [target[i]/before[i] for i in range(kw_args["bins"])]
     target_to_after_ratio = [target[i]/after[i] for i in range(kw_args["bins"])]
@@ -499,7 +505,6 @@ def kspi_reweighter(kpipi, kspi, kw_args):
     for a in [ax1,ax3,ax5,ax7,ax9,ax11]:
         a.set_ylabel("Normalised entries [a.u.]")
         a.legend(loc="best")
-    
     plt.savefig(f"{str(output_directory)}/kspi_ptetaphi_reweightings.pdf")
     
 
