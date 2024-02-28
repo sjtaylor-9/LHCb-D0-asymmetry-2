@@ -26,10 +26,10 @@ def parse_arguments():
     
     --year      Used to specify the year at which the data was taken the user is interested in.
                 The argument must be one of: [16, 17, 18]. These referr to 2016, 2017 & 2018, respectively.
-    --size      Used to specify the amount of events the user is interested in analysing.
-                The argument must be one of: [large, small, medium, 1-8]. The integers specify the number of root
-                files to be read in. Large is equivalent to 8. Medium is equivalent to 4. Small takes 200000 events.
-    --path      Used to specify the directory in which the output files should be written - the binning scheme. It is not required,
+    --size  Used to specify the amount of events the user is interested in analysing.
+            The argument must be one of: [1-800]. The integer must be divisible by 10. The integers specify the number of root
+            files to be read in.
+    --path      Used to specify the directory in which the output files should be written. It is not required,
                 in the case it is not specified, the default path is the current working directory.
     --input     Used to specify the directory in which the input data should be found. It is not required,
                 in the case it is not specified, the default path is the current working directory.
@@ -46,8 +46,7 @@ def parse_arguments():
     )
     parser.add_argument(
         "--size",
-        type=str,
-        choices=["large", "medium", "small", "1", "2", "3", "4", "5", "6", "7", "8"],
+        type=size_argument,
         required=True,
         help="flag to set the data taking year."
     )
@@ -76,6 +75,27 @@ def dir_path(string):
         return string
     else:
         raise NotADirectoryError(string)
+    
+def size_argument(value):
+    if value.isdigit():
+        # If the input is a digit, treat it as an integer
+        int_value = int(value)
+        if 1 <= int_value <= 800 and int_value % 10 == 0: 
+            return int_value
+        else:
+            raise argparse.ArgumentTypeError("Integer value must be between 1 and 800 and be divisible by 10.")
+    else:
+        raise argparse.ArgumentTypeError("Invalid value.Choose an integer between 1 and 800 that is divisible by 10.")
+
+def generate_list(size_value_local):
+    result_list = []
+    current_value = 10
+
+    while not result_list or result_list[-1] < size_value_local:
+        result_list.append(current_value)
+        current_value += 10
+
+    return result_list
         
         
 # - - - - - - - MAIN BODY - - - - - - - #
@@ -84,14 +104,23 @@ args = parse_arguments()
 
 # import data
 tree_name = "D02Kpi_Tuple/DecayTree"
-data = uproot.concatenate((f"{args.input}/{polarity}_data_{args.year}_{args.size}.root:{tree_name}" for polarity in ["up", "down"]))
+size_value = args.size
+if isinstance(size_value, int):
+    size_value = int(size_value)
+    size_list = generate_list(size_value)
+    
+data = uproot.concatenate((f"{args.input}/20{args.year}/{polarity}/both/{polarity}_data_{args.year}_{size}_clean.root:{tree_name}" for polarity in ["up", "down"] for size in size_list),
+  expressions=["D0_MM", "D0_PT", "D0_ETA"])
 
 # select particles with pT below 10 GeV/c
 
 length = len(data["D0_PT"])
-print(length)
+print(length, 'events')
 mask = np.ones(length)
 mask = np.logical_and(mask, data["D0_PT"]<10000)
+mask = np.logical_and(mask, data["D0_ETA"]>2)
+mask = np.logical_and(mask, data["D0_ETA"]<5)
+
 length = np.sum(mask)
 data = data[mask]
 
@@ -113,7 +142,7 @@ for i in np.arange(0, NBINS):
     print(timeCounts)
     bins[i+1] = eta_bins
 
-# output bin edges for 100 pT_eta bins
+# outputbin edges 
 np.savetxt(f"{args.path}/{args.year}_{args.size}_bins.txt", bins, delimiter=',')
 
 #output bin edges for 10 pT bins
@@ -128,13 +157,10 @@ mask_eta = np.logical_and(mask_eta, data["D0_ETA"]<5)
 length_eta = np.sum(mask_eta)
 data = data[mask_eta]
 
-# create bins for eta
+# create bins
 bins_eta = np.empty(NBINS+1)
 eta_frame = pd.DataFrame({'Values': data["D0_ETA"]})
 eta_res, eta_bins = pd.qcut(eta_frame['Values'], q=NBINS, retbins=True)
 
-# outputbin edges for eta
+# outputbin eta edges 
 np.savetxt(f"{args.path}/{args.year}_{args.size}_eta_bins.txt", eta_bins, delimiter=',')
-
-
-
