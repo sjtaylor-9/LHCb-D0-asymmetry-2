@@ -4,7 +4,7 @@ import gc
 import uproot as ur
 import awkward as ak
 import numpy as np
-from hep_ml.reweight import GBReweighter
+from hep_ml.reweight import GBReweighter, BinsReweighter
 from pathlib import Path
 import argparse
 
@@ -87,12 +87,12 @@ print("reading signal...")
 variables = ["P1_ETA", "P2_ETA", "P1_PT", "P2_PT", "P1_PHI", "P2_PHI"]
 kpi = ur.concatenate(files, variables)
 
-kpi["kminus_pT"] = kpi["P1_PT"]
+kpi["kminus_pt"] = kpi["P1_PT"]
 kpi["kminus_eta"] = kpi["P1_ETA"]
 kpi["kminus_phi"] = kpi["P1_PHI"]
-kpi["kminus_px"] = kpi["kminus_pT"] * np.cos(kpi["kminus_phi"])
-kpi["kminus_py"] = kpi["kminus_pT"] * np.sin(kpi["kminus_phi"])
-kpi["kminus_pz"] = kpi["kminus_pT"] / (np.tan(2 * np.arctan(np.exp(-(kpi["kminus_eta"])))))
+kpi["kminus_px"] = kpi["kminus_pt"] * np.cos(kpi["kminus_phi"])
+kpi["kminus_py"] = kpi["kminus_pt"] * np.sin(kpi["kminus_phi"])
+kpi["kminus_pz"] = kpi["kminus_pt"] / (np.tan(2 * np.arctan(np.exp(-(kpi["kminus_eta"])))))
 kpi["kminus_p"] = np.sqrt(np.power(kpi["kminus_px"], 2) + np.power(kpi["kminus_py"], 2) + np.power(kpi["kminus_pz"], 2))
 kpi["piplus_pt"] = kpi["P2_PT"]
 kpi["piplus_eta"] = kpi["P2_ETA"]
@@ -184,6 +184,7 @@ kspi["trigger_pi_pz"] = kspi["trigger_pi_pt"] / np.tan(kspi["trigger_pi_theta"])
 
 def kpipi_reweighter(kpi, kpipi, original_weights, columns):
     print(f"reweighting by {columns}...")
+    #reweighter = BinsReweighter()
     reweighter = GBReweighter(n_estimators=args.n_estimators, learning_rate=args.learning_rate, max_depth=args.max_depth, min_samples_leaf=1000, loss_regularization=5.0)
     reweighter.fit(original=kpipi[columns], target=kpi[columns], original_weight=original_weights)
     weights = reweighter.predict_weights(kpipi[columns], original_weight=original_weights)
