@@ -1,9 +1,9 @@
 """
 apply_binning_scheme_pythia.py
 
-This code applies the given binning scheme to a set of data, and generates root files cotaining the events in each bin. There are 3 binning schemes used: pT, eta and pT&eta.
-The year of interest, size of the data, polarity and meson to be analysed must be specified using the required flags --year --size --polarity --meson. There also are the flags --input --path and --bin_path, which are not required. These are used to specify the directory where the input data is located, where the binning scheme can be found and where the output file should be written, respectively. By default it is set to be the current working directory.
-It outputs the root files with the events in each individual bin, as well as a txt file with the number of events in each bin.
+This code applies the given binning scheme to a set of simulated data, and generates .csv files cotaining the events in each bin. There are 3 binning schemes used: pT, eta and (pT, eta).
+The year of interest, size of the data, and meson to be analysed must be specified using the required flags --year --size --meson. There also are the flags --input --path and --bin_path, which are not required. These are used to specify the directory where the input data is located, where the binning scheme can be found and where the output file should be written, respectively. By default it is set to be the current working directory.
+It outputs the .csv files with the events in each individual bin, as well as a .txt file with the number of events in each bin.
 
 Authors: Sam Taylor (samuel.taylor-9@student.manchester.ac.uk) and Laxman Seelan (laxman.seelan@student.manchester.ac.uk)/
 Last edited: 17th February 2024
@@ -14,6 +14,7 @@ import os
 import argparse
 import numpy as np
 import csv
+
 # - - - - - - - - FUNCTIONS - - - - - - - - #
 
 def parse_arguments():
@@ -43,7 +44,7 @@ def parse_arguments():
     )
     parser.add_argument(
         "--size",
-        type=str,
+        type=int,
         required=True,
        help="flag to set the proportion of the full Turbo data set to be used."
     )
@@ -51,7 +52,7 @@ def parse_arguments():
         "--meson",
         type=str,
         choices=["D0","D0bar"],
-        required=True,
+        required=False,
         help="flag to set the D0 meson flavour."
     )    
     parser.add_argument(
@@ -91,15 +92,20 @@ def dir_path(string):
 args = parse_arguments()
 
 if args.meson == 'D0':
-    data = np.genfromtxt('/afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/pythia_hadronisation/selected_data/D0_clean_pythia_data.csv', delimiter = ',')
+    data = np.genfromtxt(f'{args.input}/{args.meson}_clean_pythia_data.csv', delimiter = ',')
     pT = data[:, 2]
     rapidity = data[:, 3]
 elif args.meson == 'D0bar':
-    data = np.genfromtxt('/afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/pythia_hadronisation/selected_data/D0bar_clean_pythia_data.csv', delimiter = ',')
+    data = np.genfromtxt(f'{args.input}/{args.meson}_clean_pythia_data.csv', delimiter = ',')
     pT = data[:, 2]
     rapidity = data[:, 3]
+else:
+    data = np.genfromtxt(f'{args.input}/clean_pythia_data.csv', delimiter = ',')
+    pT = data[:, 2]
+    rapidity = data[:, 3]
+    args.meson = 'both'
 
-# Loads in txt of the binning scheme
+# Loads in .txt of the binning scheme
 bins = np.loadtxt(f"{args.bin_path}/{args.year}_{args.size}_bins.txt", delimiter=',')
 bins_pT = np.loadtxt(f"{args.bin_path}/{args.year}_{args.size}_pT_bins.txt", delimiter=',')
 bins_rapidity = np.loadtxt(f"{args.bin_path}/{args.year}_{args.size}_eta_bins.txt", delimiter=',')
@@ -123,7 +129,7 @@ for i in np.arange(0, 10):
         selected_data = data[rapidity_mask]
         nevents = np.append(nevents, len(selected_data))
         # Write out bin
-        out_file_name = f"{args.path}/local/{args.meson}_bin{j}{i}.csv"
+        out_file_name = f"{args.path}/local/{args.meson}_local_bin{j}{i}.csv"
         print(f"Writing to {out_file_name}...")
         with open(out_file_name, 'w', newline='') as file:
             writer = csv.writer(file)
@@ -139,7 +145,7 @@ for i in np.arange(0, 10):
     selected_data = data[pT_mask]
     nevents_pT = np.append(nevents_pT, len(selected_data))
     
-    out_file_name = f"{args.path}/pT/{args.meson}_bin{i}.csv"
+    out_file_name = f"{args.path}/pT/{args.meson}_pT_bin{i}.csv"
     print(f"Writing to {out_file_name}...")
     # Write out bin
     with open(out_file_name, 'w', newline='') as file:
@@ -156,7 +162,7 @@ for i in np.arange(0, 10):
     selected_data = data[rapidity_mask]
     nevents_rapidity = np.append(nevents_rapidity, len(selected_data))
     
-    out_file_name = f"{args.path}/rapidity/{args.meson}_bin{i}.csv"
+    out_file_name = f"{args.path}/rapidity/{args.meson}_rapidity_bin{i}.csv"
     print(f"Writing to {out_file_name}...")
     # Write out bin
     with open(out_file_name, 'w', newline='') as file:
