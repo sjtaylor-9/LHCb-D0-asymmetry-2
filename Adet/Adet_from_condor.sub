@@ -37,7 +37,7 @@ when_to_transfer_output = ON_EXIT
 #   tomorrow: 1 day
 #   testmatch: 3 days
 #   nextweek: 1 week
-+JobFlavour             = "testmatch"
++JobFlavour             = "nextweek"
 
 
 # to receive emails when jobs finish/fail:
@@ -48,7 +48,7 @@ notification            = Always
 # here is where you list the jobs you want to submit.
 # these should match your arguments definition above
 queue year, polarity, n_estimators, learning_rate, max_depth, args from (
-    2016, magdown, 500, 0.1, 4, --small-kpipi
+    2018, magup, 500, 0.1, 4
 )
 # if there are no arguments i.e. you just want to submit one job, it would be simply:
 #   queue

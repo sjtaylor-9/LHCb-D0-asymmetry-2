@@ -9,9 +9,10 @@
 # you need to pass your input kpi data
 # the kpipi and kspi data are read from a location on /eos
 # so dont worry about that
+#--input /eos/lhcb/user/l/lseelan/Total/selected_data/${1}/${2:3:4}/both/up_data_16_130_clean.root:D02Kpi_Tuple/DecayTree \
 python reweight_control_modes.py \
 --year $1 --polarity $2 --n-estimators $3 --learning-rate $4 --max-depth $5 $6 \
---input /eos/lhcb/user/l/lseelan/Total/selected_data/${1}/${2:3:4}/both/:D02Kpi_Tuple/DecayTree \
+--input /afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/${1}/1mil_${1}_${1:2:2}.root:D02Kpi_Tuple/DecayTree \
 --output-directory /afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/$1/$2/${6:2:5}/
 
 # this produces some new data files in the specified output directory
@@ -28,8 +29,8 @@ python plot_reweighted_control_modes.py \
 --kpipi-input /afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/$1/$2/${6:2:5}/temp_kpipi.root \
 --kspi-input /afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/$1/$2/${6:2:5}/temp_kspi.root \
 --output-directory /afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/$1/$2/${6:2:5}/ --overwrite
-# writes to the same location, doesn't actually overwrite anything
-# as it only generates plots
+# # writes to the same location, doesn't actually overwrite anything
+# # as it only generates plots
 
 
 # finally use the generated weights (if you deem them satisfactory)
@@ -38,8 +39,9 @@ for mode in {kpipi,kspi}; do
   python fit_control_modes.py \
   --input /afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/$1/$2/${6:2:5}/temp_${mode}.root \
   --control-mode ${mode} \
-  --output-directory /afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/$1/$2/${6:2:5}/${mode}/
-done
+  --output-directory /afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/$1/$2/${6:2:5}/${mode}/ \
+  --polarity $2
+# done
 
 
 

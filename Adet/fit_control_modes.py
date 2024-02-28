@@ -41,6 +41,13 @@ parser.add_argument(
     default="",
     help="Pass the fit_params_{args.control_mode}.txt location if you want to fix parameters to the result of a previous fit"
 )
+parser.add_argument(
+    "--polarity",
+    type=str,
+    default="",
+    help="The magnet polarity",
+    choices=["magup", "magdown"],
+)
 args = parser.parse_args()
 
 files = {}
@@ -104,15 +111,22 @@ ttree = R.TChain("weightedTree")
 for file in files:
     ttree.Add(file)
 
+plot_type = args.polarity
+plot_type_capitalised = plot_type[0].upper() + plot_type[1:3] + plot_type[3].upper() + plot_type[4:]
+
 if args.control_mode == "kpipi":
     mass_variable = "D_DTF_M_PV"
     mass_range = (1819, 1919)
-    m_obs = R.RooRealVar(mass_variable, "m(K#pi#pi) [MeV/c^{2}]", *mass_range)
+    m_obs = R.RooRealVar(mass_variable, "m(K#pi#pi) [MeVc^{-2}]", *mass_range)
+    plot_type_p = plot_type_capitalised + " #it{D^{+} #rightarrow K^{-}#pi^{+}#pi^{+}}"
+    plot_type_n = plot_type_capitalised + " #it{D^{-} #rightarrow K^{+}#pi^{-}#pi^{-}}"
 else:
     mass_variable = "D_DTF_M_PV_CON"
     mass_range = (1800, 1935)
-    m_obs = R.RooRealVar(mass_variable, "m(K_{S}^{0}#pi) [MeV/c^{2}]", *mass_range)
-
+    m_obs = R.RooRealVar(mass_variable, "m(K_{S}^{0}#pi) [MeVc^{-2}]", *mass_range)
+    plot_type_p = plot_type_capitalised + " #it{D^{+} #rightarrow K^{0}_{S}#pi^{+}}"
+    plot_type_n = plot_type_capitalised + " #it{D^{-} #rightarrow K^{0}_{S}#pi^{-}}"
+    
 ttree.SetBranchStatus("*", 0)
 ttree.SetBranchStatus(mass_variable, 1)
 ttree.SetBranchStatus("D_ID", 1)
@@ -120,15 +134,15 @@ ttree.SetBranchStatus("weight", 1)
 
 norm_factor = normalise_weights(ttree, "weight")
 
-nbins = (mass_range[-1] - mass_range[0])*1
-bins_for_plotting = np.linspace(*mass_range, nbins+1)
-hist_P = R.TH1F("hist_P", "hist_P", nbins, *mass_range)
-hist_M = R.TH1F("hist_M", "hist_M", nbins, *mass_range)
+numbins = (mass_range[-1] - mass_range[0])*1
+bins_for_plotting = np.linspace(*mass_range, numbins+1)
+hist_P = R.TH1F("hist_P", "hist_P", numbins, *mass_range)
+hist_M = R.TH1F("hist_M", "hist_M", numbins, *mass_range)
 
 ttree.Draw(f"{mass_variable}>>hist_P", f"TMath::Min({weight_truncation_value}, {norm_factor}*weight) * (D_ID>0 && {norm_factor}*weight<{weight_cut_value})", "goff")
 ttree.Draw(f"{mass_variable}>>hist_M", f"TMath::Min({weight_truncation_value}, {norm_factor}*weight) * (D_ID<0 && {norm_factor}*weight<{weight_cut_value})", "goff")
-roo_hist_P = R.RooDataHist("roo_hist_P", "roo_hist_P", R.RooArgList(m_obs), hist_P)
-roo_hist_M = R.RooDataHist("roo_hist_M", "roo_hist_M", R.RooArgList(m_obs), hist_M)
+roo_hist_P = R.RooDataHist("roo_hist_P", "Data", R.RooArgList(m_obs), hist_P)
+roo_hist_M = R.RooDataHist("roo_hist_M", "Data", R.RooArgList(m_obs), hist_M)
 
 
 def MakeKPiPiModel(model_dict: dict, suffix: str="") -> tuple:
@@ -263,13 +277,13 @@ roo_hist = R.RooDataHist("roo_hist", "roo_hist", R.RooArgList(m_obs),R.RooFit.In
 
 
 
-
 ########################
 ## maximum likelihood ##
 ########################
 simultaneous_model.fitTo(roo_hist, R.RooFit.Save(True), R.RooFit.Extended(True), R.RooFit.SumW2Error(True))
-plot(m_obs, roo_hist_P, Model_P, "LHCb Unofficial", bins=bins_for_plotting, unit="MeV/c^{2}", save_to=f"{output_directory}/positive_likelihood_fit", setlogy=True)
-plot(m_obs, roo_hist_M, Model_M, "LHCb Unofficial", bins=bins_for_plotting, unit="MeV/c^{2}", save_to=f"{output_directory}/negative_likelihood_fit", setlogy=True)
+
+plot(m_obs, roo_hist_P, Model_P, plot_type_p, bins=bins_for_plotting, setlogy=True, save_to=f"{output_directory}/positive_likelihood_fit", unit="MeVc^{-2}")
+plot(m_obs, roo_hist_M, Model_M, plot_type_n, bins=bins_for_plotting, setlogy=True, save_to=f"{output_directory}/negative_likelihood_fit", unit="MeVc^{-2}")
 
 
 ####################
@@ -282,9 +296,9 @@ m.setVerbose(False)#True)
 m.setPrintLevel(-1)
 m.migrad()
 m.hesse()
-plot(m_obs, roo_hist_P, Model_P, "LHCb Unofficial", bins=bins_for_plotting, unit="MeV/c^{2}", save_to=f"{output_directory}/positive_chi2_fit", setlogy=True)
-plot(m_obs, roo_hist_M, Model_M, "LHCb Unofficial", bins=bins_for_plotting, unit="MeV/c^{2}", save_to=f"{output_directory}/negative_chi2_fit", setlogy=True)
 
+plot(m_obs, roo_hist_P, Model_P, plot_type_p, bins=bins_for_plotting, setlogy=True, save_to=f"{output_directory}/positive_chi2_fit", unit="MeVc^{-2}")
+plot(m_obs, roo_hist_M, Model_M, plot_type_n, bins=bins_for_plotting, setlogy=True, save_to=f"{output_directory}/negative_chi2_fit", unit="MeVc^{-2}")
 
 print("writing result to file...")
 with open(f"{output_directory}/output_{args.control_mode}.txt", "w") as f:
