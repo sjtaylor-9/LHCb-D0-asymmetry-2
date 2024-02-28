@@ -24,7 +24,8 @@ def parse_arguments():
 
     --path      Used to specify the directory in which the output files should be written. It is not required,
                 in the case it is not specified, the default path is the current working directory.
-    
+    --input     Used to specify the directory in which the input data should be found. It is not required,
+                in the case it is not specified, the default path is the current working directory.
     Returns the parsed arguments.
     '''
     parser = argparse.ArgumentParser()
@@ -34,6 +35,13 @@ def parse_arguments():
         required=False,
         default=os.getcwd(),
         help="flag to set the path where the output files should be written to"
+    )
+    parser.add_argument(
+        "--input",
+        type=dir_path,
+        required=False,
+        default=os.getcwd(),
+        help="flag to set the path where the input data should be found"
     )
     return parser.parse_args()
 
@@ -45,7 +53,7 @@ def read_from_file():
     Returns:
         data (array): An array containging the simulated events information.
     """
-    data = np.genfromtxt('/afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/pythia_hadronisation/pythia_hadronisation68.csv', delimiter = ',', skip_header = 1)
+    data = np.genfromtxt(f'{args.input}/pythia_hadronisation72.csv', delimiter = ',', skip_header = 1)
     
     return data
 
