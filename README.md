@@ -4,7 +4,6 @@ This project is aimed to calculating the production asymmetry of the $D^0$ meson
 In this repository there are the necessary tools in order to:
   - (in progress)
 
-```environment.yaml``` includes all of the necessary python libraries needed, apart from ```LHCbStyle```, which can be installed using: ```mamba install -c conda-forge lhcbstyle```. 
 
 **Warnings:**
 
@@ -23,7 +22,7 @@ git pull origin main
 ```
 
 ## How to use
-A miniforge environment containing the libraries from ```ennvironment.yaml``` can be created using ```mamba env create -f environment.yaml -n D0-asymmetry```.
+A miniforge environment containing the libraries from ```ennvironment.yaml``` can be created using ```mamba env create -f environment.yaml -n D0-asymmetry```. ```environment.yaml``` includes all of the necessary python libraries needed, apart from ```LHCbStyle```, which can be installed using: ```mamba install -c conda-forge lhcbstyle```. 
 
 The different scripts can be run individually (note that a different set of arguments is required for each), or as a whole using the bash script *main.sh*.
 In order to use *main.sh* 4 arguments are required. These are:
@@ -41,4 +40,4 @@ This should produce the same output as shown in the folder *example* (still to b
 A large amount of the scripts uses or is inspired by the code written by Camille Jarvis-Stiggants and Michael England during their MPhys project and Marc Oriol Pérez in his summer internship.
 
 
-**Authors:** Sam Taylor (samuel.taylor-9@student.manchester.ac.uk) and Laxman Seelan (laxman.seelan@student.manchester.ac.uk)/ **Last modified:** 9th February 2024
+**Authors:** Sam Taylor (samuel.taylor-9@student.manchester.ac.uk) and Laxman Seelan (laxman.seelan@student.manchester.ac.uk)/ **Last modified:** 29th February 2024
