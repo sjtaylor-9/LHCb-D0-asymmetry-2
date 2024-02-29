@@ -1,5 +1,5 @@
 # Measuring the Production Asymmetry between $D^0$ and  $\bar{D}^0$ mesons in proton-proton collisions at $\sqrt{s} =$ 13 TeV at the LHCb
-This project is aimed to calculating the production asymmetry of the $D^0$ meson. This is done in differents regions of the phase space spanned by the transverse momentum ($p_T$) and pseudorapidity ($\eta$) of the $D^0$ meson. This is the current version (9th February) of the code. The project was done in collaboration with Laxman Seelan.
+This project is aimed to calculating the production asymmetry of the $D^0$ meson. This is done in differents regions of the phase space spanned by the transverse momentum ($p_T$) and pseudorapidity ($\eta$) of the $D^0$ meson. This is the current version (29th February) of the code. The project was done in collaboration with Laxman Seelan.
 
 In this repository there are the necessary tools in order to:
   - (in progress)
