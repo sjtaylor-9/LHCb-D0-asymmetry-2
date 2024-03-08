@@ -15,7 +15,7 @@ Current developments will soon produce code to:
  - Use \textsc{Pythia} to make a theoretical prediction of the production asymmetry
  - Plot the asymmetry in the bins of ($p_T, \eta$),
  - Plot the real asymmetry and the simulated asymmetry against $p_T$ and $\eta$ and compare the results with a pull distribution.
-
+ - Produce an overarching ```main.sh``` file that runs all the code from one command.
 
 **Warnings:**
 
