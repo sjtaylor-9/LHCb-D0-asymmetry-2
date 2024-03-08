@@ -8,10 +8,11 @@ In this repository there are the necessary tools in order to:
  - Produce a global model using the global fit fit parameters ,
  - Create a uniform binning across the phase space - ($p_T, \eta$) and individual $p_T$, $\eta$ binning schemes,
  - Perform a local fit in each of the phase space bins, by using a simultaneous extended maximum likelihood fit and plotting,
+
 Current developments will soon produce code to:
  - Calculate a local detection asymmetry using the same binning scheme as the raw asymmetry,
  - Calculate a global production Asymmetry: Integrated and Averaged over the binning scheme bins,
- - Use $\textsc{Pythia}$ to make a theoretical prediction of the production asymmetry
+ - Use \textsc{Pythia} to make a theoretical prediction of the production asymmetry
  - Plot the asymmetry in the bins of ($p_T, \eta$),
  - Plot the real asymmetry and the simulated asymmetry against $p_T$ and $\eta$ and compare the results with a pull distribution.
 
