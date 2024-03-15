@@ -1,11 +1,13 @@
 """
 detection_asym.py
 
+This code calculates the Kpi detection asymmetry for a given year and polarity in each of the bins in the pT, eta and (pT, eta) binning schemes.
+The raw Kpipi and Kspi asymmetries are read in from .txt files saved on the eos, which are outputs from the HTCondor jobs in the kinematic reweighting procedure.
+The year of interest, polarity, binning scheme and bin number to be analysed must be specified using the required flags --year --polarity --scheme --bin. There is also the --input flag to set the eos path for where the Kpipi and Kspi raw asymmetries are saved. The --path flag sets the output directory which is not required.
 
 Authors: Sam Taylor (samuel.taylor-9@student.manchester.ac.uk) and Laxman Seelan (laxman.seelan@student.manchester.ac.uk)/
-Last edited: 
+Last edited: 15th March 2024
 """
-
 # - - - - - - IMPORT STATEMENTS - - - - - - #
 import os
 import argparse
@@ -23,6 +25,10 @@ def parse_arguments():
                 in the case it is not specified, the default path is the current working directory.
     --input     Used to specify the directory in which the input data should be found. It is not required,
                 in the case it is not specified, the default path is the current working directory.
+    --scheme    Used to specify the binning scheme to be analysed.
+                The argument must be one of: [pT, eta, local].
+    --bin       Used to specify the bin number to be analysed.
+                For the pT, eta schemes this is [0, 9] and for the local scheme this is [0, 99].
     
     Returns the parsed arguments.
     '''
@@ -83,14 +89,17 @@ def dir_path(string):
         raise NotADirectoryError(string)
 
 def read_from_file():
-    '''
+    """
     Opens .txt files and reads the values of the raw asymmetries and their uncertainties.
-    
     Returns these two values for both control modes.
-    '''
+
+    Returns:
+        A_raw_dict: A dictionary containing the raw asymmetries for both control modes. The specific asymmetries are defined as A_raw_dict['kpipi'] and A_raw_dict['A_raw_kspi'].
+    """
     # Initialize dictionaries to store Araw and Araw_err for each mode
     Araw_dict = {}
     Araw_err_dict = {}
+    # Opens the .txt files for both modes and saves the asymmetry and its uncertainty to their respective dictionaries. 
     for mode in ['kpipi', 'kspi']:
         with open(f'{args.input}/{args.scheme}/20{args.year}/mag{args.polarity}/{args.bin}/{mode}/output_{mode}.txt') as f:
             for line in f:
@@ -105,15 +114,17 @@ def read_from_file():
 
 def calculate_detection_asym(A_kpipi, A_kpipi_err, A_kspi, A_kspi_err):
     """
-
+    This function calculates the Kpi detection asymmetry and its uncertainty for a given year, polarity and bin number within the chosen binning scheme.
+    
     Args:
-        A_kpipi (_type_): _description_
-        A_kpipi_err (_type_): _description_
-        A_kspi (_type_): _description_
-        A_kspi_err (_type_): _description_
+        A_kpipi (float): The raw asymmetry for the Kpipi control mode.
+        A_kpipi_err (float): The raw uncertainty associated with the Kpipi raw asymmetry.
+        A_kspi (float): The raw asymmetry for the Kspi control mode.
+        A_kspi_err (float): The raw uncertainty associated with the Kspi raw asymmetry.
 
     Returns:
-        _type_: _description_
+        Adet (float): The Kpi detection asymmetry.
+        Adet_err (float): The detection asymmetry uncertainty asssociated with the Kpi detection asymmetry.
     """
     # Detection asymmetry for K0 found from a paper: https://arxiv.org/pdf/1405.2797.pdf
     Adet_k0 = 0.054
@@ -126,15 +137,19 @@ def calculate_detection_asym(A_kpipi, A_kpipi_err, A_kspi, A_kspi_err):
     return Adet, Adet_err
 
 def output_results(Adet, uncertainty):
-    '''
+    """
     This function takes all the necessary values and outputs them to the screen in a nicely formatted way.
     It also outputs them to a .txt file, written in the directory established by the user.
-    '''
 
+    Args:
+        Adet (float): The Kpi detection asymmetry for a given year, polarity and bin number.
+        uncertainty (float): The detection asymmetry uncertainty associated with Adet.
+    """
+    # Print the detection asymmetry rounded to 3 sf
     asymmetry = str(round(Adet, 3)) + ' +/- ' + str(round(uncertainty, 3))
-    print(f'The 20{args.year} Mag{args.polarity} detection asymmetry of bin {args.bin} in the {args.mode} phase-space is:', asymmetry)
-    print("------------------------------")
+    print(f'The 20{args.year} Mag{args.polarity} detection asymmetry of bin {args.bin} in the {args.scheme} binning scheme is:', asymmetry)
     
+    # Save the detection asymmetry and its error to a .txt file
     array = np.array([Adet, uncertainty])
     np.savetxt(f"{args.path}/detection_asym_{args.year}_{args.polarity}_bin{args.bin}.txt", array)
 # - - - - - - - MAIN BODY - - - - - - - - - #
@@ -148,8 +163,8 @@ Araw_err_kpipi = Araw_err['kpipi']
 Araw_kspi = A_raw['kspi']
 Araw_err_kspi = Araw_err['kspi']
 
-print("Kpipi:", Araw_kpipi, Araw_err_kpipi)
-print("Kspi:", Araw_kspi, Araw_err_kspi)
+print(f"The raw Kpipi asymmetry for 20{args.year} Mag{args.polarity} in bin {args.bin} in the {args.scheme} binning scheme is:", Araw_kpipi, Araw_err_kpipi)
+print(f"The raw Kspi asymmetry for 20{args.year} Mag{args.polarity} in bin {args.bin} in the {args.scheme} binning scheme is:", Araw_kspi, Araw_err_kspi)
 
 # Calculaete the kpi dection asymmetry
 Adet, Adet_err = calculate_detection_asym(Araw_kpipi, Araw_err_kpipi, Araw_kspi, Araw_err_kspi)
