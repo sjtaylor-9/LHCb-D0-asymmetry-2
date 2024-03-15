@@ -13,7 +13,7 @@ for year in '16' '17' '18'; do
         --polarity ${polarity} \
         --scheme 'global' \
         --input '/eos/lhcb/user/s/sjtaylor/D0_asymmetry/Adet/global' \
-        --path 'Adet/Outputs/global/'${year}/${polarity} \
+        --path 'Adet/Outputs/global/'${year}/${polarity}
     done
 done
 
