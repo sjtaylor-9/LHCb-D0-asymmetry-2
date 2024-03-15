@@ -184,7 +184,7 @@ kspi["trigger_pi_pz"] = kspi["trigger_pi_pt"] / np.tan(kspi["trigger_pi_theta"])
 
 def kpipi_reweighter(kpi, kpipi, original_weights, columns):
     print(f"reweighting by {columns}...")
-    #reweighter = BinsReweighter()
+    #reweighter = BinsReweighter(n_bins=10, n_neighs=0)
     reweighter = GBReweighter(n_estimators=args.n_estimators, learning_rate=args.learning_rate, max_depth=args.max_depth, min_samples_leaf=1000, loss_regularization=5.0)
     reweighter.fit(original=kpipi[columns], target=kpi[columns], original_weight=original_weights)
     weights = reweighter.predict_weights(kpipi[columns], original_weight=original_weights)
@@ -213,6 +213,7 @@ gc.collect()
 
 def kspi_reweighter(kpipi, kspi, original_weights, target_weights, columns):
     print(f"reweighting by {columns}...")
+    #reweighter = BinsReweighter(n_bins=10, n_neighs=0)
     reweighter = GBReweighter(n_estimators=args.n_estimators, learning_rate=args.learning_rate, max_depth=args.max_depth, min_samples_leaf=1000, loss_regularization=5.0)
     reweighter.fit(original=kspi[columns], target=kpipi[columns], original_weight=original_weights, target_weight=target_weights)
     weights = reweighter.predict_weights(kspi[columns], original_weight=original_weights)
