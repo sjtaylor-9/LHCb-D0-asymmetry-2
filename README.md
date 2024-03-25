@@ -18,10 +18,11 @@ Current developments will soon produce code to:
  - Produce an overarching ```main.sh``` file that runs all the code from one command.
 
 **Warnings:**
-
-While running the code be aware that any change to one of the scripts can lead to a malfunction. In addition, make sure that the directories that will be generated while running the program don't already exist. If they do exist beforehand, this program might not work as intended. ```model_fitting.py``` produces a segmentation violation, however this bug does not affect the code.
-In the event that condor does not recognise ```utils.py``` as a library import, it can be added to a conda envrionment as a pip module by ```pip install -e utils```.
-```fit_control_modes.py``` returns an error for versions of ```root``` later than 6.28.0. If the conda environment used uses ```environment.yaml``` in this repository, then this error will be avoided.
+ - ```model_fitting.py``` produces a segmentation violation, however this bug does not affect the code and is a memory issue with ```ROOT```,
+ - In the event that condor does not recognise ```utils.py``` as a library import, it can be added to a conda envrionment as a pip module by ```pip install -e utils```,
+ - ```fit_control_modes.py``` returns an error for versions of ```root``` later than 6.28.0. If the conda environment used uses ```environment.yaml``` in this repository, then this error will be avoided.
+ - If the selection and detection asymmetry scipts are to be re-run then all of the file paths need to be changed as cannot write to a different user's eos,
+ - The local detection asymmetry must be run in batches as the eos storage is not large enough to hold of the ```.root``` files at once.
 
 ## How to download
 In order to download this package you can use the following commands in your terminal:
@@ -37,19 +38,19 @@ git pull origin main
 A miniforge environment containing the libraries from ```ennvironment.yaml``` can be created using ```mamba env create -f environment.yaml -n D0-asymmetry```. ```environment.yaml``` includes all of the necessary python libraries needed, apart from ```LHCbStyle```, which can be installed using: ```mamba install -c conda-forge lhcbstyle```. 
 
 The different scripts can be run individually (note that a different set of arguments is required for each), or as a whole using the bash script *main.sh*.
-In order to use *main.sh* 4 arguments are required. These are:
-- The path where the output should be written
-- The year the data to be used was taken [16, 17, 18]
-- The size or amount of data to be used [small, medium, large, 1, 2, 3, 4, 5, 6, 7, 8]
-- Whether a binned fit should be performed (otherwise unbinned fit) [y, Y, n, N]
+In order to use ```main_processing.sh``` 5 arguments are required. These are:
+- The path where the output should be written,
+- The year the data to be used was taken [16, 17, 18],
+- The size or amount of data to be used [1-800]. The integers must be in steps of 10,
+- Whether a binned fit should be performed (otherwise unbinned fit) [y, Y, n, N],
+- The name of the model to be used.
 
-Here is an example of how to call *main.sh*:
+Here is an example of how to call ```main_processing.sh```:
 ```
-bash main.sh example 18 large y
+bash main_processing.sh 2018 18 100 y Model_1
 ```
-This should produce the same output as shown in the folder *example* (still to be implemented).
 ## Credits
-A large amount of the scripts uses or is inspired by the code written by Camille Jarvis-Stiggants and Michael England during their MPhys project and Marc Oriol Pérez in his summer internship.
+A large amount of the scripts uses or is inspired by the code written by Camille Jarvis-Stiggants and Michael England during their MPhys project and Marc Oriol Pérez in his summer internship. The detection asymmetry scripts were written by Aodh\'{a}n Burke for his PhD thesis and the ```runpythia.cpp``` script was written by Suzanne Klaver for her study of the $D^\pm$ mesons.
 
 
 **Authors:** Sam Taylor (samuel.taylor-9@student.manchester.ac.uk) and Laxman Seelan (laxman.seelan@student.manchester.ac.uk)/ **Last modified:** 8th March 2024
