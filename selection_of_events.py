@@ -122,7 +122,7 @@ def cut_data(data):
     
     The requirements are:
     - Both hadrons must have a positive momentum in the z direction
-    - Pseudorapidity must be between 0 and 6
+    - Pseudorapidity must be between 2 and 5
     - Transverse momentum must be between 0 GeV and 10 GeV
     - Particle must not be muons
     - P1_PIDK > 5
@@ -143,10 +143,10 @@ def cut_data(data):
     mask = np.ones(length)
     mask = np.logical_and(mask, P1_PZ>0)
     mask = np.logical_and(mask, P2_PZ>0)
-    mask = np.logical_and(mask, data["P1_ETA"]>0)
-    mask = np.logical_and(mask, data["P2_ETA"]>0)
-    mask = np.logical_and(mask, data["P1_ETA"]<6)
-    mask = np.logical_and(mask, data["P2_ETA"]<6)
+    mask = np.logical_and(mask, data["P1_ETA"]>2)
+    mask = np.logical_and(mask, data["P2_ETA"]>2)
+    mask = np.logical_and(mask, data["P1_ETA"]<5)
+    mask = np.logical_and(mask, data["P2_ETA"]<5)
     mask = np.logical_and(mask, data["P1_PT"]>0)
     mask = np.logical_and(mask, data["P2_PT"]>0)
     mask = np.logical_and(mask, data["P1_PT"]<10000)
