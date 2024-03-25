@@ -11,7 +11,7 @@ In this repository there are the necessary tools in order to:
  - Perform a local fit of the invariant mass disribution in each of the phase-space bins, by using a simultaneous extended maximum likelihood fit and plotting,
  - Calculate global and local detection asymmetries using the same binning scheme as the raw asymmetry,
  - Calculate a global production asymmetry,
- - Use ```Pythia``` to make a theoretical prediction of the production asymmetry
+ - Use ```Pythia``` to make a theoretical prediction of the production asymmetry,
  - Plot the asymmetry in the bins of ($p_T, \eta$),
  - Plot the real and simulated production asymmetries against $p_T$ and $\eta$ and compare the results with a pull distribution.
 
