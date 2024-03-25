@@ -37,7 +37,7 @@ git pull origin main
 ## How to use
 A miniforge environment containing the libraries from ```ennvironment.yaml``` can be created using ```mamba env create -f environment.yaml -n D0-asymmetry```. ```environment.yaml``` includes all of the necessary python libraries needed, apart from ```LHCbStyle```, which can be installed using: ```mamba install -c conda-forge lhcbstyle```. 
 
-The different scripts can be run individually (note that a different set of arguments is required for each), or as a whole using the bash script *main.sh*.
+The different scripts can be run individually (note that a different set of arguments is required for each), or as a whole using the bash script ```main_processing.sh```.
 In order to use ```main_processing.sh``` 5 arguments are required. These are:
 - The path where the output should be written,
 - The year the data to be used was taken [16, 17, 18],
