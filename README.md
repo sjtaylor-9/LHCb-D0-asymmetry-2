@@ -50,7 +50,7 @@ Here is an example of how to call ```main_processing.sh```:
 bash main_processing.sh 2018 18 100 y Model_1
 ```
 ## Credits
-A large amount of the scripts uses or is inspired by the code written by Camille Jarvis-Stiggants and Michael England during their MPhys project and Marc Oriol Pérez in his summer internship. The detection asymmetry scripts were written by Aodh\'{a}n Burke for his PhD thesis and the ```runpythia.cpp``` script was written by Suzanne Klaver for her study of the $D^\pm$ mesons.
+A large amount of the scripts uses or is inspired by the code written by Camille Jarvis-Stiggants and Michael England during their MPhys project and Marc Oriol Pérez in his summer internship. The detection asymmetry and ```utils.py``` scripts were written by Aodhan Burke for his PhD thesis and the ```runpythia.cpp``` script was written by Suzanne Klaver for her study of the $D^\pm$ mesons.
 
 
 **Authors:** Sam Taylor (samuel.taylor-9@student.manchester.ac.uk) and Laxman Seelan (laxman.seelan@student.manchester.ac.uk)/ **Last modified:** 8th March 2024
