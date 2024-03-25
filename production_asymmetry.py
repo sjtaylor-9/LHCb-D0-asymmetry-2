@@ -277,21 +277,6 @@ def production_asymm(raw_asym, raw_error, detection_asym, detection_error):
 
     return A_prod, A_prod_err
 
-
-def weighted_mean(val, err):
-    """
-
-    Args:
-        val (_type_): _description_
-        err (_type_): _description_
-
-    Returns:
-        _type_: _description_
-    """
-    weighted_mean, sum_weights = np.average(np.array(val), weights=np.power(np.array(err), -2), returned=True)
-    uncertainty = np.power(sum_weights, -0.5)
-    return weighted_mean, uncertainty
-
 def A_prod_unbinned():
     """_summary_
 
@@ -399,28 +384,17 @@ elif scheme == 'pT' or scheme == 'eta':
         A_prod_list.append(A_prod_bin[0])
         A_prod_err_list.append(A_prod_bin[1])
 
-
-# Calculates the global production asymmetry as the weighted mean across the bins
-AProd = weighted_mean(A_prod_list, A_prod_err_list)
-print(f"The 20{args.year} global production asymmetry found from the weighted mean is: ", round(AProd[0],3), "% +/-", round(AProd[1], 3), '%')
-
+# Saves the global bin-integrated production asymmetry to a .txt file
 print(f"The 20{args.year} global bin-integrated production asymmetry is: ", round(Aprod_unbinned[0],3), "% +/-", round(Aprod_unbinned[1], 3), '%')
 
-# Saving Aprod calculated from weighted average and Aprod calculated from unbinned average of D0_up, D0_down, D0bar up, D0bar down
-# Aprod, Aprod error -- both from weighted mean, Aprod from unbinned average, Aprod err from unbinned average
-array = np.array([AProd[0],
-                  AProd[1],
-                  Aprod_unbinned[0], 
+array = np.array([Aprod_unbinned[0], 
                   Aprod_unbinned[1]])
 np.savetxt(f"{args.results_path}/final_asymmetries_{args.scheme}_{args.year}_{args.size}.txt", array)
 
 file_path = f"{args.results_path}/final_text_asymmetries_{args.scheme}_{args.year}_{args.size}.txt"
 
 with open(file_path, "w") as file:
-    text = (
-        f'A_prod_bin: {round(AProd[0], 3)}\n'
-        f'A_prod_err_bin: {round(AProd[1], 3)}\n'
-        f'A_prod_integrated: {round(Aprod_unbinned[0], 3)}\n'
-        f'A_prod_err_integrated: {round(Aprod_unbinned[1], 3)}\n'
+    text = (f'A_prod_integrated: {round(Aprod_unbinned[0], 3)}\n'
+            f'A_prod_err_integrated: {round(Aprod_unbinned[1], 3)}\n'
     )
     file.write(text)
