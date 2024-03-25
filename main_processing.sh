@@ -7,6 +7,7 @@ directory=$1 # Directory in eos
 size=$2
 minsize=$3 # Does a loop for size in the range size to minsize
 binned=$4
+model=$5
 
 
 
@@ -23,24 +24,14 @@ if [[ "$binned" != "y" ]]; then
     fi
 fi
 
-if ! [[ "$minsize" =~ ^[0-9]+$ ]]; then
-  echo "WARNING: You did not select a valid option for the minsize fit"
-  echo
-  echo "The selection will run over sizes in the array [10, ..., $size]"
-  minsize=10
-else
-  echo "The selection will run over sizes in the array [$minsize,...,$size]"
-fi
+
 # Create necessary directories to store output
-
-
-
+mkdir $directory
 mkdir "/eos/lhcb/user/l/lseelan/"$directory
 mkdir "/eos/lhcb/user/l/lseelan/"$directory"/selected_data"
 
 echo "The necessary directories have been created"
 echo
-
 
 # Run the code
 
@@ -63,7 +54,7 @@ while [ $size -ge $minsize ]; do
         for polar in up down
         do
 
-            python multiple_candidates.py --year $year --size $size --polarity $polar --path "/eos/lhcb/user/l/lseelan/"$directory"/selected_data"
+             python multiple_candidates.py --year $year --size $size --polarity $polar --path "/eos/lhcb/user/l/lseelan/"$directory"/selected_data"
         done
         echo "Multiple candidates have been removed"
     done
@@ -75,10 +66,70 @@ done
 #################################################################################
 #################################################################################
 
-# Remove files that don't end with "_clean.root"
+# # Remove files that don't end with "_clean.root"
 find "/eos/lhcb/user/l/lseelan/"$directory"/selected_data" -type f ! -name '*_clean.root' -exec rm -f {} +
 
-# list the remaining files (those ending with "_clean.root")
+# # list the remaining files (those ending with "_clean.root")
 find "/eos/lhcb/user/l/lseelan/"$directory"/selected_data"  -type f -name '*_clean.root'
 
-# echo "Unneccesary files have been removed"
+echo "Unneccesary files have been removed"
+
+# Create and apply the binning schemes
+bash main_binning.sh $directory $year $size
+
+# Generate and analyse the Pythia data
+bash Pythia/main_pythia_hadronisation.sh
+
+# Perform the fitting for the global and local fits
+bash main_fitting.sh $directory $year $size $binned $model
+
+# Calculate the detection asymmetry for the HTCondor outputs (These can be read from /eos/lhcb/user/s/sjtaylor or otherwise have to be generated separately to the main pipeline)
+bash Adet/main_detection_asym.sh
+
+mkdir $directory"/asymmetry/"
+mkdir $directory"/asymmetry/pT"
+mkdir $directory"/asymmetry/eta"
+mkdir $directory"/asymmetry/local"
+
+python production_asymmetry.py \
+    --year $year \
+    --size $size \
+    --path $directory"/asymmetry/local" \
+    --model_input $directory"/model_fitting/" \
+    --scheme 'local' \
+    --detection_input "Adet/Outputs"
+
+python production_asymmetry.py \
+    --year $year \
+    --size $size \
+    --path $directory"/asymmetry/pT" \
+    --model_input $directory"/model_fitting/" \
+    --scheme 'pT' \
+    --detection_input "Adet/Outputs"
+
+python production_asymmetry.py \
+    --year $year \
+    --size $size \
+    --path $directory"/asymmetry/eta" \
+    --model_input $directory"/model_fitting/" \
+    --scheme 'eta' \
+    --detection_input "Adet/Outputs"
+
+python plot_pT_eta.py \
+    --year $year \
+    --size $size \
+    --bin_path $directory"/binned_data/binning_scheme" \
+    --asymm_path $directory"/asymmetry/pT" \
+    --path $directory"/results" \
+    --scheme 'pT' \
+    --sim_asymm_path $directory"/Pythia/asymmetry/pT"
+python plot_pT_eta.py \
+    --year $year \
+    --size $size \
+    --bin_path $directory"/binned_data/binning_scheme" \
+    --asymm_path $directory"/asymmetry/eta" \
+    --path $directory"/results" \
+    --scheme 'eta' \
+    --sim_asymm_path $directory"/Pythia/asymmetry/eta"
+
+echo "Plotted Aprod vs pT and eta"

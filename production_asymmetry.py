@@ -26,16 +26,12 @@ def parse_arguments():
     --size          Used to specify the amount of events the user is interested in analysing.
                     The argument must be one of: [1-800]. The interger must be divisible by 10. The integers specify the number of root
                     files to be read in.
-    --polarity      Used to specify the polarity of the magnet the user is interested in.
-                    The argument must be one of: [up, down].
     --path          Used to specify the directory in which the output files should be written. It is not required,
                     in the case it is not specified, the default path is the current working directory.
     --model_input   Used to specify the directory in which the input data for the raw asymmetries should be found.
     --detection_input   Used to specify the directory in which the input dectection asymmetries should be found.
     --scheme        Used to specify the binning scheme to be analysed.
                     The argument must be one of: [pT, eta, local].
-    --bin           Used to specify the bin number to be analysed.
-                    For the pT, eta schemes this is [0, 9] and for the local scheme this is [0, 99].
     Returns the parsed arguments.
     '''
     parser = argparse.ArgumentParser()
@@ -51,13 +47,6 @@ def parse_arguments():
         type=size_argument,
         required=True,
         help="flag to set the size of the input data."
-    )
-    parser.add_argument(
-        "--polarity",
-        type=str,
-        choices=["up","down"],
-        required=True,
-        help="flag to set the data taking polarity."
     )
     parser.add_argument(
         "--path",
@@ -87,13 +76,6 @@ def parse_arguments():
         choices = ['eta', 'local', 'pT'],
         default=os.getcwd(),
         help="flag to set the binning scheme to be used."
-    )
-    parser.add_argument(
-        "--bin",
-        type=int,
-        required=True,
-        default=os.getcwd(),
-        help="flag to set the bin number."
     )
     return parser.parse_args()
 

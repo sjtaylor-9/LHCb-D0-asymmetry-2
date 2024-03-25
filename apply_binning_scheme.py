@@ -26,9 +26,7 @@ def parse_arguments():
     
     --year      Used to specify the year at which the data was taken the user is interested in.
                 The argument must be one of: [16, 17, 18]. These referr to 2016, 2017 & 2018, respectively.
-    --size      Used to specify the amount of events the user is interested in analysing.
-                The argument must be one of: [large, small, medium, 1-8]. The integers specify the number of root
-                files to be read in. Large is equivalent to 8. Medium is equivalent to 4. Small takes 200000 events.
+    --size      Used to specify the amount of events the user is interested in analysing. The integers specify the number of root files to be read in.
     --polarity  Used to specify the polarity of the magnet the user is interested in.
                 The argument must be one of: [up, down].
     --meson     Used to specify the meson the user is interested in.
@@ -53,9 +51,8 @@ def parse_arguments():
     parser.add_argument(
         "--size",
         type=str,
-        choices=["large", "medium", "small", "1", "2", "3", "4", "5", "6", "7", "8"],
         required=True,
-        help="flag to set the data taking year."
+       help="flag to set the proportion of the full Turbo data set to be used."
     )
     parser.add_argument(
         "--polarity",
@@ -111,9 +108,9 @@ args = parse_arguments()
 # import data
 tree_name = "D02Kpi_Tuple/DecayTree"
 if args.meson=="both":
-    data = uproot.concatenate(f"{args.input}/{args.polarity}_data_{args.year}_{args.size}_clean.root:{tree_name}")
+    data = uproot.concatenate(f"{args.input}/20{args.year}/{args.polarity}/both/{args.polarity}_data_{args.year}_{args.size}_clean.root:{tree_name}")
 else:
-    data = uproot.concatenate(f"{args.input}/{args.meson}_{args.polarity}_data_{args.year}_{args.size}_clean.root:{tree_name}")
+    data = uproot.concatenate(f"{args.input}/20{args.year}/{args.polarity}/{args.meson}/{args.meson}_{args.polarity}_data_{args.year}_{args.size}_clean.root:{tree_name}")
 
 # Loads in txt of the binning scheme
 bins = np.loadtxt(f"{args.bin_path}/{args.year}_{args.size}_bins.txt", delimiter=',')
