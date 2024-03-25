@@ -1,11 +1,11 @@
-mkdkir Outputs
+mkdir Outputs
 mkdir Outputs/global_Adet
 
 # Make the necessary directories to calculate the global detection asymmetries
 for year in '16' '17' '18'; do
     for polarity in 'up' 'down'; do
-        mkdir mkdir Outputs/global_Adet/${year}
-        mkdir mkdir Outputs/global_Adet/${polarity}
+        mkdir Outputs/global_Adet/${year}
+        mkdir Outputs/global_Adet/${polarity}
 
         # Calculate the global detection asymmetry for each year and polarity
         python detection_asym.py \
@@ -13,15 +13,15 @@ for year in '16' '17' '18'; do
         --polarity ${polarity} \
         --scheme 'global' \
         --input '/eos/lhcb/user/s/sjtaylor/D0_asymmetry/Adet/global' \
-        --path 'Adet/Outputs/global/'${year}/${polarity}
+        --path 'Outputs/global/'${year}/${polarity}
     done
 done
 
 
 # Make the necessary directories in the individual pT, eta bins and
-for scheme in 'pT' 'eta'; do
-    for year in '16' '17' '18'; do
-        for polarity in 'up' 'down'; do
+for scheme in 'pT'; do #'eta'; do
+    for year in '16'; do #'17' '18'; do
+        for polarity in 'down' 'up'; do
             mkdir Outputs/${scheme}
             mkdir Outputs/${scheme}/${year}
             mkdir Outputs/${scheme}/${year}/${polarity}
@@ -34,8 +34,7 @@ for scheme in 'pT' 'eta'; do
                 --scheme ${scheme} \
                 --input '/eos/lhcb/user/s/sjtaylor/D0_asymmetry/Adet' \
                 --bin ${bin} \
-                --path 'Adet/Outputs/'${scheme}/${year}/${polarity} \
-                --type 'local'
+                --path 'Outputs/'${scheme}/${year}/${polarity} 
             done
         done
     done
