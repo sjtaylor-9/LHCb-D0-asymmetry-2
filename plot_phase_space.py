@@ -20,7 +20,7 @@ import matplotlib.cm
 from matplotlib.colors import ListedColormap
 from matplotlib import colormaps
 import awkward as ak
-
+from matplotlib.colors import LinearSegmentedColormap
 # - - - - - - - FUNCTIONS - - - - - - - #
 
 def parse_arguments():
@@ -30,8 +30,8 @@ def parse_arguments():
     --year      Used to specify the year at which the data was taken the user is interested in.
                 The argument must be one of: [16, 17, 18]. These referr to 2016, 2017 & 2018, respectively.
     --size      Used to specify the amount of events the user is interested in analysing.
-                The argument must be one of:  [1-800]. The integers must be in steps of 10. The integers specify the number of root
-                files to be read in.
+                The argument must be one of: [1-800]. The integer must be divisible by 10. 
+                The integers specify the number of root files to be read in.
     --polarity  Used to specify the polarity of the magnet the user is interested in.
                 The argument must be one of: [up, down].
     --meson     Used to specify the meson the user is interested in.
@@ -58,7 +58,7 @@ def parse_arguments():
         type=size_argument,
         required=True,
         help="flag to set the data taking year."
-    )  
+    )
     parser.add_argument(
         "--polarity",
         type=str,
@@ -105,7 +105,7 @@ def dir_path(string):
         return string
     else:
         raise NotADirectoryError(string)
-
+        
 def size_argument(value):
     if value.isdigit():
         # If the input is a digit, treat it as an integer
@@ -115,21 +115,45 @@ def size_argument(value):
         else:
             raise argparse.ArgumentTypeError("Integer value must be between 1 and 800 and be divisible by 10.")
     else:
-        raise argparse.ArgumentTypeError("Invalid value. Choose between 'small', 'medium', 'large', or an integer between 1 and 800 that is divisible by 10.")
+        raise argparse.ArgumentTypeError("Invalid value.Choose an integer between 1 and 800 that is divisible by 10.")
 
+
+def generate_list(size_value_local):
+    result_list = []
+    current_value = 10
+
+    while not result_list or result_list[-1] < size_value_local:
+        result_list.append(current_value)
+        current_value += 10
+
+    return result_list
+        
 # - - - - - - - MAIN BODY - - - - - - - #
+
 args = parse_arguments()
 
 # Import data
 
 tree_name = "D02Kpi_Tuple/DecayTree"
-data = uproot.concatenate(f"{args.input}/20{args.year}/{args.polarity}/{args.meson}/{args.meson}_{args.polarity}_data_{args.year}_{args.size}_clean.root:{tree_name}")
+size_value = args.size
+if isinstance(size_value, int):
+    size_value = int(size_value)
+    size_list = generate_list(size_value)
+    
+data = uproot.concatenate((f"{args.input}/20{args.year}/{polarity}/both/{polarity}_data_{args.year}_{size}_clean.root:{tree_name}" for polarity in ["up", "down"] for size in size_list),
+  expressions=["D0_MM", "D0_PT", "D0_ETA"])
 
 bins = np.loadtxt(f"{args.bin_path}/{args.year}_{args.size}_bins.txt", delimiter=',')
 bins[0] = bins[0]/1000
 viridis = colormaps['YlOrRd']
 newcolors = viridis(np.linspace(0, 1, 25))
 newcmp = ListedColormap(newcolors)
+
+# Define the colors for your colormap
+colors = [(0, 'white'), (0.33, 'yellow'),(0.66, 'orange'), (1, 'red')]
+
+# Create the colormap
+custom_cmap = LinearSegmentedColormap.from_list('custom_cmap', colors)
 
 pT = data["D0_PT"]/1000
 eta = data["D0_ETA"]
@@ -139,7 +163,7 @@ eta_flat = ak.to_numpy(eta).flatten()
 # Third histogram
 fig = plt.figure()
 ax = fig.add_subplot(111)
-h2d = ax.hist2d(np.true_divide(pT_flat,1), np.true_divide(eta_flat,1), bins=100, cmap=newcmp)
+h2d = ax.hist2d(np.true_divide(pT_flat,1), np.true_divide(eta_flat,1), bins=200, cmap=custom_cmap)
 ax.set_xlabel(r'$p_{T}$ [GeV/c]', fontsize = 16)
 ax.set_ylabel(r'$\eta$', fontsize = 16)
 ax.tick_params(axis='both', labelsize=12)
