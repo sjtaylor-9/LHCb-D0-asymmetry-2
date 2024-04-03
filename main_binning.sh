@@ -28,12 +28,12 @@ python create_binning_scheme.py \
     --input "/eos/lhcb/user/l/lseelan/Total/selected_data"
 
 for meson in D0 D0bar; do 
-    for polar in up down; do    
+    for polarity in up down; do    
         python apply_binning_scheme.py \
             --year $year \
             --size $size \
             --meson $meson \
-            --polarity $polar \
+            --polarity $polarity \
             --path $directory"/binned_data/" \
             --input "/eos/lhcb/user/l/lseelan/Total/selected_data" \
             --bin_path $directory"/binned_data/binning_scheme"
@@ -41,7 +41,7 @@ for meson in D0 D0bar; do
             --year $year \
             --size $size \
             --meson $meson \
-            --polarity $polar \
+            --polarity $polarity \
             --path $directory"/binned_data/binning_scheme" \
             --input "/eos/lhcb/user/l/lseelan/Total/selected_data" \
             --bin_path $directory"/binned_data/binning_scheme"
@@ -53,12 +53,12 @@ echo "The data has been binned"
 echo
 
 echo "Applying binning scheme independent of meson flavour, needed for Adet"
-for polar in up down; do    
+for polarity in up down; do    
     python apply_binning_scheme.py \
         --year $year \
         --size $size \
         --meson 'both' \
-        --polarity $polar \
+        --polarity $polarity \
         --path $directory"/binned_data" \
         --input "/eos/lhcb/user/l/lseelan/Total/selected_data" \
         --bin_path $directory"/binned_data/binning_scheme"
