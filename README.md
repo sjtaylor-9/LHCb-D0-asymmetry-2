@@ -33,7 +33,7 @@ git pull origin main
 ```
 
 ## How to use
-A miniforge environment containing the libraries from ```ennvironment.yaml``` can be created using ```mamba env create -f environment.yaml -n D0-asymmetry```. ```environment.yaml``` includes all of the necessary python libraries needed, apart from ```LHCbStyle```, which can be installed using: ```mamba install -c conda-forge lhcbstyle```. 
+A miniforge environment containing the libraries from ```ennvironment.yaml``` can be created using ```mamba env create -f environment.yaml -n D0-asymmetry```. ```environment.yaml``` includes all of the necessary ```Python``` libraries needed, apart from ```LHCbStyle```, which can be installed using: ```mamba install -c conda-forge lhcbstyle```. 
 
 The different scripts can be run individually (note that a different set of arguments is required for each), or as a whole using the bash script ```main_processing.sh```.
 In order to use ```main_processing.sh``` 5 arguments are required. These are:
@@ -48,7 +48,7 @@ Here is an example of how to call ```main_processing.sh```:
 bash main_processing.sh 2018 18 100 y Model_1
 ```
 ## Credits
-A large amount of the scripts uses or is inspired by the code written by Camille Jarvis-Stiggants and Michael England during their MPhys project and Marc Oriol Pérez in his summer internship. The detection asymmetry and ```utils.py``` scripts were written by Aodhan Burke for his PhD thesis and the ```runpythia.cpp``` script was written by Suzanne Klaver for her study of the $D^\pm$ mesons.
+A large amount of the scripts uses or is inspired by the code written by Camille Jarvis-Stiggants and Michael England during their MPhys project and Marc Oriol Pérez in his summer internship. The detection asymmetry scripts used by ```HTCondor``` and the ```utils.py``` script were written by Aodhan Burke for his PhD thesis and the ```runpythia.cpp``` script was written by Suzanne Klaver for her study of the $D^\pm$ mesons.
 
 
-**Authors:** Sam Taylor (samuel.taylor-9@student.manchester.ac.uk) and Laxman Seelan (laxman.seelan@student.manchester.ac.uk)/ **Last modified:** 25th March 2024
+**Authors:** Sam Taylor (samuel.taylor-9@student.manchester.ac.uk) and Laxman Seelan (laxman.seelan@student.manchester.ac.uk)/ **Last modified:** 5th April 2024
