@@ -7,9 +7,8 @@ The year of interest and size of the data to be analysed must be specified using
 This code is  inspired on the work of Camille Jarvis-Stiggants and Michael England and Marc Oriol Pérez. The code has been completely rewritten and reorganised, and some features have been added to add flexibility to the code, but some of the original functions have been used here as well.
 
 Authors: Sam Taylor (samuel.taylor-9@student.manchester.ac.uk) and Laxman Seelan (laxman.seelan@student.manchester.ac.uk)
-Last edited: 15th March 2024
+Last edited: 5th April 2024
 """
-
 # - - - - - - IMPORT STATEMENTS - - - - - - #
 import random
 import os
@@ -60,14 +59,14 @@ def parse_arguments():
         type=dir_path,
         required=True,
         default=os.getcwd(),
-        help="flag to set the path where the input data should be found."
+        help="flag to set the path where the signal yields should be found."
     )
     parser.add_argument(
         "--detection_input",
         type=dir_path,
         required=True,
         default=os.getcwd(),
-        help="flag to set the path where the input data should be found."
+        help="flag to set the path where the detection asymmetries should be found."
     )
     parser.add_argument(
         "--scheme",
@@ -159,11 +158,18 @@ def get_yield(bin_num, scheme):
     Returns all the signal normalization constants, together with their uncertainties.
 
     Args:
-        bin_num (_type_): _description_
-        scheme (_type_): _description_
+        bin_num (integer): This is the bin number of the respective binning scheme when calculating the local production asymmetry. 
+        scheme (string): This is the relevant binning scheme when calculating the local production asymmetry.
 
     Returns:
-        _type_: _description_
+        yield_D0_up[0]: The signal yield from the MagUp D0 invariant mass fit.
+        yield_D0_up[1]: The uncertainty associated with the signal yield of the MagUp D0 invariant mass fit.
+        yield_D0bar_up[0]: The signal yield from the MagUp D0bar invariant mass fit.
+        yield_D0bar_up[1]: The uncertainty associated with the signal yield of the MagUp D0bar invariant mass fit.
+        yield_D0_down[0]: The signal yield from the MagDown D0 invariant mass fit.
+        yield_D0_down[1]: The uncertainty associated with the signal yield of the MagDown D0 invariant mass fit.
+        yield_D0bar_down[0]: The signal yield from the MagDown D0bar invariant mass fit.
+        yield_D0bar_down[1]: The uncertainty associated with the signal yield of the MagDown D0bar invariant mass fit.
     """
     yield_D0_up = read_from_file('up', bin_num, scheme, 'D0')
     yield_D0bar_up = read_from_file('up', bin_num, scheme, 'D0bar')
@@ -175,14 +181,20 @@ def get_yield(bin_num, scheme):
 
 def A_Det(bin_num, scheme, A_det_up, A_det_up_err, A_det_down, A_det_down_err):
     """
-    The detection asymmetry for Kpi is defined as A_detKpi) = A_raw(D->Kpipi) - A_raw(D->Ks0pi) - A_det(Ks0)
-    
+    This function calculates the total detection asymmetry and it's uncertainty from the up and down components that are outputted from detection_asym.py.
+    The detection asymmetry for Kpi is defined as A_detKpi) = A_raw(D->Kpipi) - A_raw(D->Ks0pi) - A_det(Ks0).
+
     Args:
-        bin_num (int): The bin number of the binning scheme being used.
-        scheme (string): The binning scheme being used.
-        Adet_global (boolean): Deduces if the detection asymmetry is the global one or not.
+        bin_num (integer): If the local asymmetry is being calculated then this is the bin number of the respective binning scheme.
+        scheme (string): If the local asymmetry is being calculated then this is the relevant binning scheme.
+        A_det_up (float): The MagUp detection asymmetry outputted from detection_asym.py.
+        A_det_up_err (float): The MagUp detection asymmetry uncertainty outputted from detection_asym.py.
+        A_det_down (float):The MagDown detection asymmetry outputted from detection_asym.py.
+        A_det_down_err (float): The MagDown detection asymmetry outputted from detection_asym.py.
+
     Returns:
-        : _description_
+        A_det: The polarity-integrated detection asymmetry.
+        A_det_err: The total uncertainty associated with the detection asymmetry.
     """
     
     if bin_num is not None:
@@ -198,40 +210,43 @@ def A_Det(bin_num, scheme, A_det_up, A_det_up_err, A_det_down, A_det_down_err):
 
 def calculate_raw_asymmetry(yeild_D0, yield_D0bar, bin_width, N_D0_err, N_D0bar_err):
     """
-    It takes the signal yields for D0 and D0bar as arguments and then calculates the raw
-    asymmetries from these. It also propagates the uncertainties.
+    It takes the signal yields for D0 and D0bar as arguments and then calculates the raw asymmetries from these. 
+    It also propagates the uncertainties.
     
     Returns both the asymmetry and its uncertainty as a percentage.
 
     Args:
-        yeild_D0 (_type_): _description_
-        yield_D0bar (_type_): _description_
-        bin_width (_type_): _description_
-        N_D0_err (_type_): _description_
-        N_D0bar_err (_type_): _description_
+        yeild_D0 (float): The signal yield from the D0 invariant mass fit.
+        yield_D0bar (float): The signal yield from the D0bar invariant mass fit.
+        bin_width (integer): The bin width is 1 MeV/c^2
+        N_D0_err (floar): The uncertainty associated with the signal yield of the D0 invariant mass fit.
+        N_D0bar_err (float)): The uncertainty associated with the signal yield of the D0bar invariant mass fit.
 
     Returns:
-        _type_: _description_
+        A: The raw asymmetry given as a percentage.
+        A_err: The uncertainty associated with the raw asymmetry given as a percentage.
     """
+    # Calculates the raw asymmetry
     N_D0 = abs(yeild_D0)/abs(bin_width)
     N_D0bar = abs(yield_D0bar)/abs(bin_width)
-    
     A = (N_D0 - N_D0bar)/(N_D0 + N_D0bar)
+    
+    # Calculates the uncertainty on the raw asymmetry
     A_err = 2*(((N_D0bar**2)*(N_D0_err**2) + (N_D0**2)*(N_D0bar_err**2))**0.5)*((N_D0 + N_D0bar)**(-2))
           
     return 100*A, 100*A_err
 
 def output_results(A_raw, A_raw_err, bin_num, A_prod, A_prod_err):
     """
-    This function takes all the necessary values and outputs them to the screen in a nicely formatted way.
+    This function takes all the necessary values for the local asymmetries and outputs them to the screen in a nicely formatted way.
     It also outputs them to a .txt file, written in the directory established by the user.
 
     Args:
-        A_raw (_type_): _description_
-        A_raw_err (_type_): _description_
-        bin_num (_type_): _description_
-        A_prod (_type_): _description_
-        A_prod_err (_type_): _description_
+        A_raw (float): The raw asymmetry of the bin.
+        A_raw_err (float): The uncertainty associated with the raw asymmetry of the bin
+        bin_num (integer): The bin number in the relevant binning scheme.
+        A_prod (float): The production asymmetry of the bin.
+        A_prod_err (float): The uncertainty associated with the production asymmetry of the bin.
     """
     asymmetry = str(round(A_raw, 3)) + ' +/- ' + str(round(A_raw_err, 3)) + ' (stat) +/- '
     print(f'The 20{args.year} raw asymmetry of bin {bin_num} is:', asymmetry)
@@ -242,29 +257,30 @@ def output_results(A_raw, A_raw_err, bin_num, A_prod, A_prod_err):
 
 def production_asymm(raw_asym, raw_error, detection_asym, detection_error):
     """
-
+    This function calculates the total production asymmetry and the associated error.
+    The function calculates both the global and local production asymmetries depending on when it is called.
+    
     Args:
-        raw_asym (_type_): _description_
-        raw_error (_type_): _description_
-        detection_asym (_type_): _description_
-        detection_error (_type_): _description_
+        raw_asym (float): The raw asymmetry.
+        raw_error (float): The uncertainty associated with the raw asymmetry.
+        detection_asym (float): The detection asymmetry. This is either a global or local value depending on when this function is ran.
+        detection_error (float): The uncertainty associated with the detection asymmetry.
 
     Returns:
-        _type_: _description_
+        A_prod: The production asymmetry.
+        A_prod_err: The uncertainty associated with the production asymmetry.
     """
-
-
     A_prod = raw_asym - detection_asym
     A_prod_err = np.sqrt(((raw_error)**2 + (detection_error)**2))
-
 
     return A_prod, A_prod_err
 
 def A_prod_unbinned():
-    """_summary_
+    """
+    This function calculates the global production asymmetry and so the bin number and binning scheme are set to None when they are required in function arguments.
 
     Returns:
-        _type_: _description_
+        A_prod_global: An array containing the global production asymmetry (element 0) and its error (element 1).
     """
     # Read in the signal yields
     yield_D0_up = read_from_file('up', 'D0')
@@ -299,13 +315,13 @@ def A_prod_unbinned():
 
     return A_prod_global
 # - - - - - - - MAIN CODE - - - - - - - - - #
-
 args = parse_arguments()
 scheme = args.scheme
 
 A_prod_list = []
 A_prod_err_list = []
 
+# Calculates the global production asymmetry
 Aprod_unbinned = A_prod_unbinned()
 
 if scheme == 'local':
