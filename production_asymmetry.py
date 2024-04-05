@@ -106,13 +106,14 @@ def read_from_file(polarity, bin_num=None, scheme=None, meson=None):
     Returns these two values.
 
     Args:
-        polarity (_type_): _description_
-        bin_num (_type_, optional): _description_. Defaults to None.
-        scheme (_type_, optional): _description_. Defaults to None.
-        meson (_type_, optional): _description_. Defaults to None.
+        polarity (string): The relevant magnet polarity of the data being read in.
+        bin_num (integer, optional): If the local asymmetry is being calculated then this is the bin number of the respective binning scheme. Defaults to None.
+        scheme (string, optional): If the local asymmetry is being calculated then this is the relevant binning scheme. Defaults to None.
+        meson (string, optional): If the yields are being read in then this is the relevant meson (D0 or D0bar). Defaults to None.
 
     Returns:
-        _type_: _description_
+        Output: The data that is read in when this function is ran is saved to this variable.
+        Output_err: This is the uncertainty that is read in when this function is ran associated with the data saved to Output.
     """
     if bin_num is not None:
         if meson is not None:
