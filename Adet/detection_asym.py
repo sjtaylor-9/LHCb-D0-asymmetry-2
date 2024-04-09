@@ -73,7 +73,6 @@ def parse_arguments():
         "--bin",
         type=int,
         required=False,
-        default=os.getcwd(),
         help="flag to set the bin number"
     )
     return parser.parse_args()
