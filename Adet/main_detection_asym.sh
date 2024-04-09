@@ -1,11 +1,11 @@
 mkdir Outputs
-mkdir Outputs/global_Adet
+mkdir Outputs/global
 
 # Make the necessary directories to calculate the global detection asymmetries
 for year in '16' '17' '18'; do
     for polarity in 'up' 'down'; do
-        mkdir Outputs/global_Adet/${year}
-        mkdir Outputs/global_Adet/${polarity}
+        mkdir Outputs/global/${year}
+        mkdir Outputs/global/${year}/${polarity}
 
         # Calculate the global detection asymmetry for each year and polarity
         python detection_asym.py \
@@ -18,24 +18,24 @@ for year in '16' '17' '18'; do
 done
 
 
-# Make the necessary directories in the individual pT, eta bins and
-for scheme in 'pT'; do #'eta'; do
-    for year in '16'; do #'17' '18'; do
-        for polarity in 'down' 'up'; do
-            mkdir Outputs/${scheme}
-            mkdir Outputs/${scheme}/${year}
-            mkdir Outputs/${scheme}/${year}/${polarity}
+# # Make the necessary directories in the individual pT, eta bins and
+# for scheme in 'pT' 'eta'; do
+#     for year in '16' '17' '18'; do
+#         for polarity in 'down' 'up'; do
+#             mkdir Outputs/${scheme}
+#             mkdir Outputs/${scheme}/${year}
+#             mkdir Outputs/${scheme}/${year}/${polarity}
 
-            # Calculate the detection asymmetry in each of the bins and save the outputs to the directories
-            for bin in {0..9}; do
-                python detection_asym.py \
-                --year ${year} \
-                --polarity ${polarity} \
-                --scheme ${scheme} \
-                --input '/eos/lhcb/user/s/sjtaylor/D0_asymmetry/Adet' \
-                --bin ${bin} \
-                --path 'Outputs/'${scheme}/${year}/${polarity} 
-            done
-        done
-    done
-done
+#             # Calculate the detection asymmetry in each of the bins and save the outputs to the directories
+#             for bin in {0..9}; do
+#                 python detection_asym.py \
+#                 --year ${year} \
+#                 --polarity ${polarity} \
+#                 --scheme ${scheme} \
+#                 --input '/eos/lhcb/user/s/sjtaylor/D0_asymmetry/Adet' \
+#                 --bin ${bin} \
+#                 --path 'Outputs/'${scheme}/${year}/${polarity} 
+#             done
+#         done
+#     done
+# done
