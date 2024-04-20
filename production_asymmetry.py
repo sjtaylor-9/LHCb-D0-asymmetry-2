@@ -14,7 +14,6 @@ import random
 import os
 import argparse
 import numpy as np
-import seaborn as sns
 # - - - - - - - FUNCTIONS - - - - - - - - - #
 def parse_arguments():
     '''
@@ -25,12 +24,14 @@ def parse_arguments():
     --size          Used to specify the amount of events the user is interested in analysing.
                     The argument must be one of: [1-800]. The interger must be divisible by 10. The integers specify the number of root
                     files to be read in.
-    --path          Used to specify the directory in which the output files should be written. It is not required,
+    --path          Used to specify the directory in which the output files should be written to. It is not required,
                     in the case it is not specified, the default path is the current working directory.
     --model_input   Used to specify the directory in which the input data for the raw asymmetries should be found.
     --detection_input   Used to specify the directory in which the input dectection asymmetries should be found.
     --scheme        Used to specify the binning scheme to be analysed.
                     The argument must be one of: [pT, eta, local].
+    --results_path  Used to specify the directory in which the final bin-integrated asymmetries should be written to. It is not required,
+                    in the case it is not specified, the default path is the current working directory.
     Returns the parsed arguments.
     '''
     parser = argparse.ArgumentParser()
@@ -75,6 +76,13 @@ def parse_arguments():
         choices = ['eta', 'local', 'pT'],
         default=os.getcwd(),
         help="flag to set the binning scheme to be used."
+    )
+    parser.add_argument(
+        "--results_path",
+        type=dir_path,
+        required=False,
+        default=os.getcwd(),
+        help="flag to set the path where the final asymmetries."
     )
     return parser.parse_args()
 
@@ -141,7 +149,7 @@ def read_from_file(polarity, bin_num=None, scheme=None, meson=None):
                     Output_err = float(currentline[1])
                 f.close()
         else:
-            with open(f'{args.detection_input}/global/{args.year}/{polarity}/detection_asym_{args.year}_{args.polarity}.txt"') as f:
+            with open(f'{args.detection_input}/global/{args.year}/{polarity}/detection_asym_{args.year}_{polarity}.txt') as f:
                 for line in f:
                     # The output of the .txt file is in the format Adet +/- Adet_err % so Adet is element 0  and Adet_err is element 2
                     currentline = line.split()
@@ -253,7 +261,7 @@ def output_results(A_raw, A_raw_err, bin_num, A_prod, A_prod_err):
     print("------------------------------")
     
     array = np.array([A_prod, A_prod_err, A_raw, A_raw_err])
-    np.savetxt(f"{args.path}/asymmetries_{args.year}_bin{bin_num}.txt", array)
+    np.savetxt(f"{args.path}/asymmetries_{args.year}_{args.size}_bin{bin_num}.txt", array)
 
 def production_asymm(raw_asym, raw_error, detection_asym, detection_error):
     """
@@ -283,10 +291,18 @@ def A_prod_unbinned():
         A_prod_global: An array containing the global production asymmetry (element 0) and its error (element 1).
     """
     # Read in the signal yields
-    yield_D0_up = read_from_file('up', 'D0')
-    yield_D0bar_up = read_from_file('up', 'D0bar')
-    yield_D0_down = read_from_file('down', 'D0')
-    yield_D0bar_down = read_from_file('down', 'D0bar')
+    yield_D0_up = read_from_file(polarity = 'up', 
+                                 meson = 'D0',
+                                 scheme = 'global')
+    yield_D0bar_up = read_from_file(polarity = 'up', 
+                                    meson = 'D0bar',
+                                    scheme = 'global')
+    yield_D0_down = read_from_file(polarity = 'down', 
+                                   meson = 'D0',
+                                   scheme = 'global')
+    yield_D0bar_down = read_from_file(polarity = 'down', 
+                                      meson = 'D0bar',
+                                      scheme  = 'global')
     
     # Read in the global detection asymmetry for magup and magdown
     A_det_up_global, A_det_up_err_global = read_from_file('up')
@@ -372,7 +388,13 @@ elif scheme == 'pT' or scheme == 'eta':
         A_raw_err = np.sqrt(((A_raw_up_err)**2 + (A_raw_down_err)**2)) /2
 
         # Calculate the detection asymmetry of the bin
-        A_det, A_det_err = A_Det(bin_num, scheme)
+        A_det, A_det_err = A_Det(bin_num=bin_num, 
+                                     scheme=scheme,
+                                     A_det_up = None, 
+                                     A_det_up_err = None, 
+                                     A_det_down = None, 
+                                     A_det_down_err = None
+                                    )
         
         # Calculate the production asymmetry of the bin
         A_prod_bin = production_asymm(A_raw, A_raw_err, A_det, A_det_err)
