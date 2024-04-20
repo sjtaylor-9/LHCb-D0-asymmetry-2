@@ -36,10 +36,11 @@ git pull origin main
 A miniforge environment containing the libraries from ```ennvironment.yaml``` can be created using ```mamba env create -f environment.yaml -n D0-asymmetry```. ```environment.yaml``` includes all of the necessary ```Python``` libraries needed, apart from ```LHCbStyle```, which can be installed using: ```mamba install -c conda-forge lhcbstyle```. 
 
 The different scripts can be run individually (note that a different set of arguments is required for each), or as a whole using the bash script ```main_processing.sh```.
-In order to use ```main_processing.sh``` 5 arguments are required. These are:
+In order to use ```main_processing.sh``` 6 arguments are required. These are:
 - The path where the output should be written,
 - The year the data to be used was taken [16, 17, 18],
 - The size or amount of data to be used [1-800]. The integers must be in steps of 10,
+- The minimum size of data to be used. This is defines the lower limit for the selection criteria so that it does not need to be run all at once/re-run over data that has already been filtered.
 - Whether a binned fit should be performed (otherwise unbinned fit) [y, Y, n, N],
 - The name of the model to be used.
 
