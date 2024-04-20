@@ -4,10 +4,11 @@
 # # Last modified: 16th September 2023
 
 directory=$1 # Directory in eos
-size=$2
-minsize=$3 # Does a loop for size in the range size to minsize
-binned=$4
-model=$5
+year=$2
+size=$3
+minsize=$4 # Does a loop for size in the range size to minsize
+binned=$5
+model=$6
 
 
 
@@ -61,10 +62,10 @@ while [ $size -ge $minsize ]; do
     size=$((size - 10))  # For example, decrease 'size' by 10 in each iteration
 done
 
-## Double check "*_clean.root" not anything else
-#################################################################################
-#################################################################################
-#################################################################################
+# Double check "*_clean.root" not anything else
+################################################################################
+################################################################################
+################################################################################
 
 # # Remove files that don't end with "_clean.root"
 find "/eos/lhcb/user/l/lseelan/"$directory"/selected_data" -type f ! -name '*_clean.root' -exec rm -f {} +
@@ -80,7 +81,7 @@ bash main_binning.sh $directory $year $size
 # Generate and analyse the Pythia data
 bash Pythia/main_pythia_hadronisation.sh
 
-# Perform the fitting for the global and local fits
+Perform the fitting for the global and local fits
 bash main_fitting.sh $directory $year $size $binned $model
 
 # Calculate the detection asymmetry for the HTCondor outputs (These can be read from /eos/lhcb/user/s/sjtaylor or otherwise have to be generated separately to the main pipeline)
@@ -97,23 +98,26 @@ python production_asymmetry.py \
     --path $directory"/asymmetry/local" \
     --model_input $directory"/model_fitting/" \
     --scheme 'local' \
-    --detection_input "Adet/Outputs"
+    --detection_input "Adet/Outputs" \
+    --results_path $directory"/results"
 
 python production_asymmetry.py \
     --year $year \
     --size $size \
     --path $directory"/asymmetry/pT" \
-    --model_input $directory"/model_fitting/" \
+    --model_input $directory"/model_fitting" \
     --scheme 'pT' \
-    --detection_input "Adet/Outputs"
+    --detection_input "Adet/Outputs" \
+    --results_path $directory"/results"
 
 python production_asymmetry.py \
     --year $year \
     --size $size \
     --path $directory"/asymmetry/eta" \
-    --model_input $directory"/model_fitting/" \
+    --model_input $directory"/model_fitting" \
     --scheme 'eta' \
-    --detection_input "Adet/Outputs"
+    --detection_input "Adet/Outputs" \
+    --results_path $directory"/results"
 
 python plot_pT_eta.py \
     --year $year \
