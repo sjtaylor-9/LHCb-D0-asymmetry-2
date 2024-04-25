@@ -11,9 +11,8 @@ import sys
 from iminuit import Minuit
 import matplotlib.pyplot as plt
 import mplhep; mplhep.style.use("LHCb2")
-from scipy.stats import chi2
+from scipy.stats import chi2, ks_2samp
 from matplotlib.patches import Rectangle
-
 
 # - - - - - - - FUNCTIONS - - - - - - - #
 
@@ -110,17 +109,29 @@ def dir_path(string):
 def read_asymmetry_values():
     with open(f'{args.path}/final_asymmetries_{args.scheme}_{args.year}_{args.size}.txt') as f:
         lines = f.readlines()
-        binned_asymm = float(lines[0])
-        binned_asymm_error = float(lines[1])
-        unbinned_asymm = float(lines[2])
-        unbinned_asymm_error = float(lines[3])
+        unbinned_asymm = float(lines[0])
+        unbinned_asymm_error = float(lines[1])
         f.close()
-    return binned_asymm, binned_asymm_error , unbinned_asymm, unbinned_asymm_error
-
+    return unbinned_asymm, unbinned_asymm_error
+def getCumY(yy, yKS):
+    # sort the data and build cumulative distribution on the set of y axis points
+    yy.sort()
+    inc = 1. / len(yy)
+    cumY = 0
+    n = 0
+    cKS = []
+    for y in yy:
+        while n < len(yKS) and y > yKS[n]:
+            cKS.append(cumY)
+            n += 1
+        cumY += inc
+    for nn in range(nSamples+1-len(cKS)):
+        cKS.append(cumY)
+    return cKS
 # - - - - - - - MAIN BODY - - - - - - - #
 args = parse_arguments()
 
-binned_asymm, binned_asymm_error , unbinned_asymm, unbinned_asymm_error = read_asymmetry_values()
+unbinned_asymm, unbinned_asymm_error = read_asymmetry_values()
 
 asymmetry = np.array([])
 asymmetry_error = np.array([])
@@ -227,9 +238,6 @@ fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(15, 12), sharex=True, gridspec_kw=
 ax1.set_ylabel(r'$A_{\mathrm{prod}}$ [%]', fontsize = 50)
 ax1.tick_params(axis='both', which='both', labelsize=30)
 
-line1 = ax1.axhline(binned_asymm, color='blue', linestyle='dashed', linewidth=5)
-fill1 = ax1.axhspan(binned_asymm-binned_asymm_error, binned_asymm+binned_asymm_error, color='blue', alpha=0.35, lw=0)
-
 line2 = ax1.axhline(unbinned_asymm, color='red', linestyle='solid', linewidth=5)
 fill2 = ax1.axhspan(unbinned_asymm-unbinned_asymm_error, unbinned_asymm+unbinned_asymm_error, color='red', alpha=0.35, lw=0)
 
@@ -247,9 +255,9 @@ extra = Rectangle((0, 0), 1, 1, fc="green", fill=True, edgecolor='none', linewid
 # Fit = ax.axhline(values[0], color='purple', linestyle=':', linewidth=5)
 
 if args.scheme == 'pT':
-    ax1.legend([(line1,fill1),(line2,fill2),Data, extra],[r'Average result over $p_{T}$ bins', r'Bin integrated result','Data','Pythia'])#, loc='upper right')
+    ax1.legend([(line2,fill2),Data, extra],[r'Bin integrated result','Data','Pythia'])#, loc='upper right')
 elif args.scheme == 'eta':
-    ax1.legend([(line1,fill1),(line2,fill2),Data, extra],[r'Average result over $\eta$ bins', r'Bin integrated result','Data','Pythia'])#,='upper right')
+    ax1.legend([(line2,fill2),Data, extra],[r'Bin integrated result','Data','Pythia'])#,='upper right')
 
 file_path = f"{args.path}/result_of_fit.txt"
 with open(file_path, "w") as file:
@@ -283,3 +291,48 @@ elif args.scheme == 'eta':
     plt.savefig(f'{args.path}/eta_Asymm_{args.year}_{args.size}.pdf', bbox_inches = "tight")
 
 plt.show()
+
+min_value_asymmetry = min(asymmetry.min(), simulated_asymmetry.min())
+max_value_asymmetry = max(asymmetry.max(), simulated_asymmetry.max())
+print(min_value_asymmetry)
+print(max_value_asymmetry)
+
+# y axis points for plotting and evaluation of the difference
+nSamples = 10000
+yKS = np.linspace(min_value_asymmetry, max_value_asymmetry, nSamples+1)
+
+
+cKS1 = getCumY(asymmetry, yKS)
+cKS2 = getCumY(simulated_asymmetry, yKS)
+
+# calculate difference dataset, the maximum of which is the KS test statistic
+dKS = [abs(x-y) for x,y in zip(cKS1, cKS2)]
+# plotting just cdf
+
+fig,ax = plt.subplots(2,1,figsize=(16, 8))
+ax[0].plot(yKS,cKS1)
+ax[0].plot(yKS,cKS2)
+ax[1].plot(yKS,dKS)
+# Add more ticks on the y-axis
+ax[0].set_yticks(np.arange(0, 1 + 0.1, 0.2))
+ax[1].set_yticks(np.arange(0, max(dKS) + 0.1, 0.1))
+# Add more ticks on the x-axis
+ax[0].set_xticks(np.arange(round(min_value_asymmetry,1)-0.1, round(max_value_asymmetry,1) + 0.1, 0.2))
+ax[1].set_xticks(ax[0].get_xticks())
+ax[0].set_ylabel('Cumulative Distribution Frequency')
+ax[1].set_xlabel('Production Asymmetry')
+ax[1].set_ylabel(r'{/delta} CDF ')
+y,x=max(zip(dKS,yKS))
+ax[1].plot(x,y, 'o')
+plt.savefig("KS-Test_y_axis.pdf",bbox_inches="tight" )
+
+# print output
+n1 = len(asymmetry)
+n2 = len(simulated_asymmetry)
+print('The KS test output for {0} and {1} entries is D={2:.3f} and d={3:.3f}.'.format(n1, n2, max(dKS), max(dKS)*(n1*n2/(n1+n2))**0.5))
+
+ks_statistic, p_value = ks_2samp(asymmetry, simulated_asymmetry)
+
+# Print the test statistic and p-value
+print("Test Statistic:", ks_statistic)
+print("p-value:", p_value)
