@@ -1,8 +1,8 @@
-seeding=$1
-min_seeding=$2 # Does a loop for size in the range size to minseeding
-directory=$3 # Need to know where to save binned data using the binning scheme found in that directory
-year=$4 # Need to know the year to access binning scheme
-size=$5 # Need to know size used to create the binning scheme
+directory=$1 # Need to know where to save binned data using the binning scheme found in that directory
+year=$2 # Need to know the year to access binning scheme
+size=$3 # Need to know size used to create the binning scheme
+seeding=$4
+min_seeding=$5 # Does a loop for size in the range size to minseeding
 
 # Need to configure pythia folder after downloading it. Then copy pythia_hadronisation into that file
 mkdir "Pythia/Pythia_Data"
@@ -57,10 +57,6 @@ echo "The necessary directories have been created"
 echo
 echo "The phase space selection criteria has been applied and multiple candidates have been removed from the simulation data"
 echo
-
-# python Pythia/pythia_hadronisation/create_binning_scheme_pythia.py \
-#   --path $directory"/Pythia/binned_data/binning_scheme" \
-#   --input "Pythia/Pythia_Data"
 
 for meson in D0 D0bar; do 
   python Pythia/pythia_hadronisation/apply_binning_scheme_pythia.py \
