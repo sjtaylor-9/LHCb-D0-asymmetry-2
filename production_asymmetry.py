@@ -133,11 +133,10 @@ def read_from_file(polarity, bin_num=None, scheme=None, meson=None):
                 f.close()
         else:
             with open(f'{args.detection_input}/{scheme}/{args.year}/{polarity}/detection_asym_{args.year}_{polarity}_bin{bin_num}.txt') as f:
-                for line in f:
-                    # The output of the .txt file is in the format Adet +/- Adet_err % so Adet is element 0  and Adet_err is element 2
-                    currentline = line.split()
-                    Output = float(currentline[0])
-                    Output_err = float(currentline[2])
+                # Read the first line and convert to integer
+                Output = float(f.readline().strip())
+                # Read the second line and convert to integer
+                Output_err = float(f.readline().strip())
                 f.close()
     else:
         if meson is not None:
@@ -150,11 +149,10 @@ def read_from_file(polarity, bin_num=None, scheme=None, meson=None):
                 f.close()
         else:
             with open(f'{args.detection_input}/global/{args.year}/{polarity}/detection_asym_{args.year}_{polarity}.txt') as f:
-                for line in f:
-                    # The output of the .txt file is in the format Adet +/- Adet_err % so Adet is element 0  and Adet_err is element 2
-                    currentline = line.split()
-                    Output = float(currentline[0])
-                    Output_err = float(currentline[2])
+                # Read the first line and convert to integer
+                Output = float(f.readline().strip())
+                # Read the second line and convert to integer
+                Output_err = float(f.readline().strip())
                 f.close()
     return Output, Output_err
 
@@ -329,7 +327,7 @@ def A_prod_unbinned():
     # Calculate the global production asymmetry
     A_prod_global= production_asymm(A_raw_global, A_raw_err_global, A_det_global, A_det_err_global)
 
-    return A_prod_global
+    return A_prod_global, A_raw_global, A_raw_err_global
 # - - - - - - - MAIN CODE - - - - - - - - - #
 args = parse_arguments()
 scheme = args.scheme
@@ -338,7 +336,7 @@ A_prod_list = []
 A_prod_err_list = []
 
 # Calculates the global production asymmetry
-Aprod_unbinned = A_prod_unbinned()
+Aprod_unbinned, A_raw_global, A_raw_err_global = A_prod_unbinned()
 
 if scheme == 'local':
     for j in range(0,10):
@@ -406,6 +404,7 @@ elif scheme == 'pT' or scheme == 'eta':
         A_prod_err_list.append(A_prod_bin[1])
 
 # Saves the global bin-integrated production asymmetry to a .txt file
+print(f"The 20{args.year} global bin-integrated raw asymmetry is: ", round(A_raw_global ,3), "% +/-", round(A_raw_err_global, 3), '%')
 print(f"The 20{args.year} global bin-integrated production asymmetry is: ", round(Aprod_unbinned[0],3), "% +/-", round(Aprod_unbinned[1], 3), '%')
 
 array = np.array([Aprod_unbinned[0], 

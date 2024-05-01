@@ -14,10 +14,10 @@ mkdir $directory"/Pythia/binned_data/pT"
 mkdir $directory"/Pythia/binned_data/eta"
 mkdir $directory"/Pythia/binned_data/binning_scheme"
 mkdir $directory"/Pythia//results"
-mkdir $directory"/Pythia//asymmetry"
-mkdir $directory"/Pythia//asymmetry/local"
-mkdir $directory"/Pythia//asymmetry/pT"
-mkdir $directory"/Pythia//asymmetry/eta"
+mkdir $directory"/Pythia/asymmetry"
+mkdir $directory"/Pythia/asymmetry/local"
+mkdir $directory"/Pythia/asymmetry/pT"
+mkdir $directory"/Pythia/asymmetry/eta"
 
 echo "The necessary directories have been created"
 
@@ -41,17 +41,18 @@ echo "The necessary directories have been created"
 # done
 # echo "Finished simulation"
 
-# python Pythia/pythia_hadronisation/combining_csv.py --path '/afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2' --max_file $seeding
+# python Pythia/pythia_hadronisation/combining_csv.py --path '/afs/cern.ch/work/l/lseelan/LHCb-D0-asymmetry-Semeter2' --max_file 85
 
 # echo
 # echo "Created a csv file with all the data"
 # echo
 
 # for integer in 30 60 85; do
-  #  python Pythia/pythia_hadronisation/multiple_candidates_pythia.py \
-  #   --input "Pythia/Pythia_Data/combined_simulated_data_"$integer".csv"  \
-  #   --path "Pythia/Pythia_Data" \
-  #   --file_suffix $integer
+#   echo "loop "$integer
+#    python Pythia/pythia_hadronisation/multiple_candidates_pythia.py \
+#     --input "Pythia/Pythia_Data/combined_simulated_data_"$integer".csv"  \
+#     --path "Pythia/Pythia_Data" \
+#     --file_suffix $integer
 # done
 
 echo
@@ -68,11 +69,11 @@ for meson in D0 D0bar; do
     --bin_path $directory"/binned_data/binning_scheme"
 done
 
-echo
-echo "The simulation data has been binned"
-echo
+# echo
+# echo "The simulation data has been binned"
+# echo
 
-for scheme in eta pT local; do
+for scheme in eta pT; do
     python Pythia/pythia_hadronisation/Aprod_pythia.py \
       --path $directory"/Pythia/asymmetry/$scheme" \
       --input_bins $directory"/Pythia/binned_data/binning_scheme" \

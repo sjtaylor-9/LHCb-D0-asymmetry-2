@@ -20,7 +20,7 @@ bin=$6
 python reweight_control_modes.py \
 --year $1 --polarity $2 --n-estimators $3 --learning-rate $4 --max-depth $5 \
 --input /eos/lhcb/user/l/lseelan/Total/binned_data/${1:2:2}/pT/both/${2:3}_${1:2:2}_70_bin${bin}.root:D02Kpi_Tuple/DecayTree \
---output-directory /eos/lhcb/user/s/sjtaylor/D0_asymmetry/Adet/pT/$1/$2/${bin}/ --overwrite
+--output-directory /eos/lhcb/user/l/lseelan/Total/Adet/pT_set_params/$1/$2/${bin}/ --overwrite
 
 # this produces some new data files in the specified output directory
 # of kpipi and kspi with the generated weights (data.root and temp_**.root)
@@ -32,10 +32,10 @@ python reweight_control_modes.py \
 
 # next plot the results using the outputs from the previous command
 python plot_reweighted_control_modes.py \
---input /eos/lhcb/user/s/sjtaylor/D0_asymmetry/Adet/pT/$1/$2/${bin}/data.root \
---kpipi-input /eos/lhcb/user/s/sjtaylor/D0_asymmetry/Adet/pT/$1/$2/${bin}/temp_kpipi.root \
---kspi-input /eos/lhcb/user/s/sjtaylor/D0_asymmetry/Adet/pT/$1/$2/${bin}/temp_kspi.root \
---output-directory /eos/lhcb/user/s/sjtaylor/D0_asymmetry/Adet/pT/$1/$2/${bin}/ --overwrite
+--input /eos/lhcb/user/l/lseelan/Total/Adet/pT_set_params/$1/$2/${bin}/data.root \
+--kpipi-input /eos/lhcb/user/l/lseelan/Total/Adet/pT_set_params/$1/$2/${bin}/temp_kpipi.root \
+--kspi-input /eos/lhcb/user/l/lseelan/Total/Adet/pT_set_params/$1/$2/${bin}/temp_kspi.root \
+--output-directory /eos/lhcb/user/l/lseelan/Total/Adet/pT_set_params/$1/$2/${bin}/ --overwrite
 # # writes to the same location, doesn't actually overwrite anything
 # # as it only generates plots
 
@@ -44,16 +44,16 @@ python plot_reweighted_control_modes.py \
 # to reweight and fit the m(D+/-) distributions for both kpipi and kspi modes
 for mode in {kpipi,kspi}; do
   python fit_control_modes.py \
-  --input /eos/lhcb/user/s/sjtaylor/D0_asymmetry/Adet/pT/$1/$2/${bin}/temp_${mode}.root \
+  --input /eos/lhcb/user/l/lseelan/Total/Adet/pT_set_params/$1/$2/${bin}/temp_${mode}.root \
   --control-mode ${mode} \
-  --output-directory /eos/lhcb/user/s/sjtaylor/D0_asymmetry/Adet/pT/$1/$2/${bin}/${mode}/ --overwrite \
-  --polarity $2
+  --output-directory /eos/lhcb/user/l/lseelan/Total/Adet/pT_set_params/$1/$2/${bin}/${mode}/ --overwrite \
+  --polarity $2 \
+  --set-parameters-to /eos/lhcb/user/s/sjtaylor/D0_asymmetry/Adet/global/$1/$2/${mode}/fit_params_${mode}.txt
 done
 
-
-rm /eos/lhcb/user/s/sjtaylor/D0_asymmetry/Adet/pT/$1/$2/${bin}/data.root
-rm /eos/lhcb/user/s/sjtaylor/D0_asymmetry/Adet/pT/$1/$2/${bin}/temp_kpipi.root
-rm /eos/lhcb/user/s/sjtaylor/D0_asymmetry/Adet/pT/$1/$2/${bin}/temp_kspi.root
+# rm /eos/lhcb/user/s/sjtaylor/D0_asymmetry/Adet/pT/$1/$2/${bin}/data.root
+# rm /eos/lhcb/user/s/sjtaylor/D0_asymmetry/Adet/pT/$1/$2/${bin}/temp_kpipi.root
+# rm /eos/lhcb/user/s/sjtaylor/D0_asymmetry/Adet/pT/$1/$2/${bin}/temp_kspi.root
 
 
 # to submit jobs do:

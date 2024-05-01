@@ -61,43 +61,43 @@ done
 echo "Plotted the global models"
 
 # Perform the local fits in the (pT, eta) bins
-for ind in {0..99}; do
-    index=$( printf '%02d' $ind)
-    python fit_global.py \
-        --year $year \
-        --size $size \
-        --path $directory"/model_fitting/local/"$index \
-        --binned_fit $binned \
-        --input "/eos/lhcb/user/l/lseelan/Total/binned_data/"$year/"local" \
-        --bin $index \
-        --scheme 'pT_eta' \
-        --initial_guess_path $directory"/model_fitting"
-    echo "Fitted Bin "$index
-done
+# for ind in {0..99}; do
+#     index=$( printf '%02d' $ind)
+#     python fit_global.py \
+#         --year $year \
+#         --size $size \
+#         --path $directory"/model_fitting/local/"$index \
+#         --binned_fit $binned \
+#         --input "/eos/lhcb/user/l/lseelan/Total/binned_data/"$year/"local" \
+#         --bin $index \
+#         --scheme 'pT_eta' \
+#         --initial_guess_path $directory"/model_fitting"
+#     echo "Fitted Bin "$index
+# done
 
-for meson in D0 D0bar; do
-   for polar in up down; do 
-        for ind in {0..99}; do
-            index=$( printf '%02d' $ind)
-            python model_fitting.py \
-                --year $year \
-                --size $size \
-                --meson $meson \
-                --polarity $polar  \
-                --path $directory"/model_fitting/local/"$index \
-                --input "/eos/lhcb/user/l/lseelan/Total/binned_data/"$year/"local" \
-                --parameters_path $directory"/model_fitting/local/"$index \
-                --bin $index \
-                --binned_fit $binned \
-                --scheme 'pT_eta'
-        done
-    done
-done
+# for meson in D0 D0bar; do
+#    for polar in up down; do 
+#         for ind in {0..99}; do
+#             index=$( printf '%02d' $ind)
+#             python model_fitting.py \
+#                 --year $year \
+#                 --size $size \
+#                 --meson $meson \
+#                 --polarity $polar  \
+#                 --path $directory"/model_fitting/local/"$index \
+#                 --input "/eos/lhcb/user/l/lseelan/Total/binned_data/"$year/"local" \
+#                 --parameters_path $directory"/model_fitting/local/"$index \
+#                 --bin $index \
+#                 --binned_fit $binned \
+#                 --scheme 'pT_eta'
+#         done
+#     done
+# done
 
 echo "Plotted the local models in the 100 (pT, eta) bins"
 
-# Perform the local fits in the individual 10 pT and eta bins
-for ind in {2..3}; do
+Perform the local fits in the individual 10 pT and eta bins
+for ind in {0..9}; do
     index=$( printf '%01d' $ind)
     python fit_global.py \
         --year $year \
@@ -118,8 +118,8 @@ for ind in {2..3}; do
     echo "Fitted Bin "$index
 done
 
-for meson in D0 D0bar; do
-   for polar in down up; do 
+for meson in D0bar; do #D0
+   for polar in  down ; do #down; do 
         for ind in {0..9}; do
             index=$( printf '%01d' $ind)
             python model_fitting.py \

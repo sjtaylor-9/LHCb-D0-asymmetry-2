@@ -1,4 +1,3 @@
-# everything is relative to location of this .sub file:
 executable              = Adet_from_condor.sh
 
 
@@ -8,20 +7,20 @@ getenv                  = True
 
 
 # arguments which are passed to the executable so that you can submit multiple jobs at once,
-# in order in the .sh:      $1         $2           $3              $4              $5        $7
+# in order in the .sh:      $1         $2           $3              $4              $5        $6
 arguments               = $(year) $(polarity) $(n_estimators) $(learning_rate) $(max_depth) $(bin)
 
 
 # whatever you list here gets sent to the CPU(s) with the job details
 # if you try to use a script which isnt listed here you will get an error
 # that the file cannot be found
-transfer_input_files    = /afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/reweight_control_modes.py, /afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/plot_reweighted_control_modes.py, /afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/fit_control_modes.py
+transfer_input_files    = /afs/cern.ch/work/l/lseelan/Semester2/Adet/reweight_control_modes.py, /afs/cern.ch/work/l/lseelan/Semester2/Adet/plot_reweighted_control_modes.py, /afs/cern.ch/work/l/lseelan/Semester2/Adet/fit_control_modes.py
 
 # these are important for debugging. failures get sent to error
 # make sure the path/to/logs/ directory exists beforehand
-log                     = /afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/logs/condor_$(year)_$(polarity)_$(n_estimators)_$(learning_rate)_$(max_depth)$(args).log
-output                  = /afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/logs/output_$(year)_$(polarity)_$(n_estimators)_$(learning_rate)_$(max_depth)$(args).txt
-error                   = /afs/cern.ch/user/s/sjtaylor/WorkSpace/D0_production_asymmetry_Sem2/LHCb_D0_asymmetry_2/Adet/logs/errors_$(year)_$(polarity)_$(n_estimators)_$(learning_rate)_$(max_depth)$(args).txt
+log                     = /afs/cern.ch/work/l/lseelan/Semester2/Adet/logs/condor_$(year)_$(polarity)_$(n_estimators)_$(learning_rate)_$(max_depth)$(args).log
+output                  = /afs/cern.ch/work/l/lseelan/Semester2/Adet/logs/output_$(year)_$(polarity)_$(n_estimators)_$(learning_rate)_$(max_depth)$(args).txt
+error                   = /afs/cern.ch/work/l/lseelan/Semester2/Adet/logs/errors_$(year)_$(polarity)_$(n_estimators)_$(learning_rate)_$(max_depth)$(args).txt
 should_transfer_files   = Yes
 when_to_transfer_output = ON_EXIT
 
@@ -49,6 +48,26 @@ notification            = Always
 # these should match your arguments definition above
 # This can probably improved using seq function in condor https://htcondor.readthedocs.io/en/latest/users-manual/submitting-a-job.html#submitting-many-similar-jobs-with-one-queue-command
 queue year, polarity, n_estimators, learning_rate, max_depth, bin from (
+    2016, magup, 500, 0.1, 4, 0
+    2016, magup, 500, 0.1, 4, 1
+    2016, magup, 500, 0.1, 4, 2
+    2016, magup, 500, 0.1, 4, 3
+    2016, magup, 500, 0.1, 4, 4
+    2016, magup, 500, 0.1, 4, 5
+    2016, magup, 500, 0.1, 4, 6
+    2016, magup, 500, 0.1, 4, 7
+    2016, magup, 500, 0.1, 4, 8
+    2016, magup, 500, 0.1, 4, 9
+    2016, magdown, 500, 0.1, 4, 0
+    2016, magdown, 500, 0.1, 4, 1
+    2016, magdown, 500, 0.1, 4, 2
+    2016, magdown, 500, 0.1, 4, 3
+    2016, magdown, 500, 0.1, 4, 4
+    2016, magdown, 500, 0.1, 4, 5
+    2016, magdown, 500, 0.1, 4, 6
+    2016, magdown, 500, 0.1, 4, 7
+    2016, magdown, 500, 0.1, 4, 8
+    2016, magdown, 500, 0.1, 4, 9
     2017, magup, 500, 0.1, 4, 0
     2017, magup, 500, 0.1, 4, 1
     2017, magup, 500, 0.1, 4, 2

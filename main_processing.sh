@@ -9,6 +9,7 @@ size=$3
 minsize=$4 # Does a loop for size in the range size to minsize
 binned=$5
 model=$6
+seeding=$7
 
 
 
@@ -36,31 +37,31 @@ echo
 
 # Run the code
 
-if ! [[ "$minsize" =~ ^[0-9]+$ ]]; then
-  echo "WARNING: You did not select a valid option for the minsize fit"
-  echo
-  echo "The selection will run over sizes in the array [10, ..., $size]"
-  minsize=10
-else
-  echo "The selection will run over sizes in the array [$minsize,...,$size]"
-fi
-# Saves all years in one folder
-while [ $size -ge $minsize ]; do
-    echo "Inside the loop. Size: $size"
-    for year in 16 17 18; do 
-        echo "Year" $year
-        python selection_of_events.py --year $year --size $size --path "/eos/lhcb/user/l/lseelan/"$directory"/selected_data"
+# if ! [[ "$minsize" =~ ^[0-9]+$ ]]; then
+#   echo "WARNING: You did not select a valid option for the minsize fit"
+#   echo
+#   echo "The selection will run over sizes in the array [10, ..., $size]"
+#   minsize=10
+# else
+#   echo "The selection will run over sizes in the array [$minsize,...,$size]"
+# fi
+# # Saves all years in one folder
+# while [ $size -ge $minsize ]; do
+#     echo "Inside the loop. Size: $size"
+#     for year in 16 17 18; do 
+#         echo "Year" $year
+#         python selection_of_events.py --year $year --size $size --path "/eos/lhcb/user/l/lseelan/"$directory"/selected_data"
 
-        echo
-        for polar in up down
-        do
+#         echo
+#         for polar in up down
+#         do
 
-             python multiple_candidates.py --year $year --size $size --polarity $polar --path "/eos/lhcb/user/l/lseelan/"$directory"/selected_data"
-        done
-        echo "Multiple candidates have been removed"
-    done
-    size=$((size - 10))  # For example, decrease 'size' by 10 in each iteration
-done
+#              python multiple_candidates.py --year $year --size $size --polarity $polar --path "/eos/lhcb/user/l/lseelan/"$directory"/selected_data"
+#         done
+#         echo "Multiple candidates have been removed"
+#     done
+#     size=$((size - 10))  # For example, decrease 'size' by 10 in each iteration
+# done
 
 # Double check "*_clean.root" not anything else
 ################################################################################
@@ -75,31 +76,31 @@ find "/eos/lhcb/user/l/lseelan/"$directory"/selected_data"  -type f -name '*_cle
 
 echo "Unneccesary files have been removed"
 
-# Create and apply the binning schemes
+# # Create and apply the binning schemes
 bash main_binning.sh $directory $year $size
 
-# Generate and analyse the Pythia data
-bash Pythia/main_pythia_hadronisation.sh
+# # Generate and analyse the Pythia data
+bash Pythia/main_pythia_hadronisation.sh $directory $year $size $seeding
 
-Perform the fitting for the global and local fits
+# # Perform the fitting for the global and local fits
 bash main_fitting.sh $directory $year $size $binned $model
 
-# Calculate the detection asymmetry for the HTCondor outputs (These can be read from /eos/lhcb/user/s/sjtaylor or otherwise have to be generated separately to the main pipeline)
-bash Adet/main_detection_asym.sh
+# # Calculate the detection asymmetry for the HTCondor outputs (These can be read from /eos/lhcb/user/s/sjtaylor or otherwise have to be generated separately to the main pipeline)
+# bash Adet/main_detection_asym.sh
 
 mkdir $directory"/asymmetry/"
 mkdir $directory"/asymmetry/pT"
 mkdir $directory"/asymmetry/eta"
 mkdir $directory"/asymmetry/local"
 
-python production_asymmetry.py \
-    --year $year \
-    --size $size \
-    --path $directory"/asymmetry/local" \
-    --model_input $directory"/model_fitting/" \
-    --scheme 'local' \
-    --detection_input "Adet/Outputs" \
-    --results_path $directory"/results"
+# python production_asymmetry.py \
+#     --year $year \
+#     --size $size \
+#     --path $directory"/asymmetry/local" \
+#     --model_input $directory"/model_fitting/" \
+#     --scheme 'local' \
+#     --detection_input "Adet/Outputs" \
+#     --results_path $directory"/results"
 
 python production_asymmetry.py \
     --year $year \

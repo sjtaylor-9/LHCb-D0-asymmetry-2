@@ -27,42 +27,42 @@ python create_binning_scheme.py \
     --path $directory"/binned_data/binning_scheme" \
     --input "/eos/lhcb/user/l/lseelan/Total/selected_data"
 
-for meson in D0 D0bar; do 
-    for polarity in up down; do    
-        python apply_binning_scheme.py \
-            --year $year \
-            --size $size \
-            --meson $meson \
-            --polarity $polarity \
-            --path $directory"/binned_data/" \
-            --input "/eos/lhcb/user/l/lseelan/Total/selected_data" \
-            --bin_path $directory"/binned_data/binning_scheme"
-        python plot_phase_space.py \
-            --year $year \
-            --size $size \
-            --meson $meson \
-            --polarity $polarity \
-            --path $directory"/binned_data/binning_scheme" \
-            --input "/eos/lhcb/user/l/lseelan/Total/selected_data" \
-            --bin_path $directory"/binned_data/binning_scheme"
-        echo "Ploted 2D graph"
-    done
-done
+# for meson in D0 D0bar; do 
+#     for polarity in up down; do    
+#         python apply_binning_scheme.py \
+#             --year $year \
+#             --size $size \
+#             --meson $meson \
+#             --polarity $polarity \
+#             --path $directory"/binned_data/" \
+#             --input "/eos/lhcb/user/l/lseelan/Total/selected_data" \
+#             --bin_path $directory"/binned_data/binning_scheme"
+#         python plot_phase_space.py \
+#             --year $year \
+#             --size $size \
+#             --meson $meson \
+#             --polarity $polarity \
+#             --path $directory"/binned_data/binning_scheme" \
+#             --input "/eos/lhcb/user/l/lseelan/Total/selected_data" \
+#             --bin_path $directory"/binned_data/binning_scheme"
+#         echo "Ploted 2D graph"
+#     done
+# done
 
-echo "The data has been binned"
-echo
+# echo "The data has been binned"
+# echo
 
-echo "Applying binning scheme independent of meson flavour, needed for Adet"
-for polarity in up down; do    
-    python apply_binning_scheme.py \
-        --year $year \
-        --size $size \
-        --meson 'both' \
-        --polarity $polarity \
-        --path $directory"/binned_data" \
-        --input "/eos/lhcb/user/l/lseelan/Total/selected_data" \
-        --bin_path $directory"/binned_data/binning_scheme"
-done
+# echo "Applying binning scheme independent of meson flavour, needed for Adet"
+# for polarity in up down; do    
+#     python apply_binning_scheme.py \
+#         --year $year \
+#         --size $size \
+#         --meson 'both' \
+#         --polarity $polarity \
+#         --path $directory"/binned_data" \
+#         --input "/eos/lhcb/user/l/lseelan/Total/selected_data" \
+#         --bin_path $directory"/binned_data/binning_scheme"
+# done
 
 echo "The data has been binned, Adet"
 
