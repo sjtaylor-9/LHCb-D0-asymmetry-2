@@ -174,7 +174,7 @@ def generate_list(size_value_local):
 # - - - - - - - MAIN BODY - - - - - - - #
 
 options = parse_arguments()
-numbins = 300
+numbins = 240
 lower_boundary = 1815
 upper_boundary = 1910
 meson = options.meson
@@ -249,29 +249,22 @@ Bifurgauss2 = RooBifurGauss("Bifurgauss2", "Bifurgauss", D0_M, bifurmean2, sigma
 a0 = RooRealVar("a0", "a0", parameters_dict["a0"])
 background = RooExponential("Exponential", "Exponential", D0_M, a0)
 
-# Model Gaussian
-mean = RooRealVar("mean", "mean", parameters_dict["mean"])
-sigma = RooRealVar("sigma", "sigma", parameters_dict["sigma"])
-gauss = RooGaussian("Gaussian", "Gaussian", D0_M, mean, sigma)
-
 
 frac = RooRealVar("frac", "frac", parameters_dict[f"frac_{options.meson}_{options.polarity}"])
 frac2 = RooRealVar("frac2", "frac2", parameters_dict[f"frac_{options.meson}_{options.polarity}_2"])
-frac3 = RooRealVar("frac3", "frac3", parameters_dict[f"frac_{options.meson}_{options.polarity}_3"])
 
 Nsig = RooRealVar("Nsig", "Nsig", parameters_dict[f"Nsig_{options.meson}_{options.polarity}"])
 Nbkg = RooRealVar("Nbkg", "Nbkg", parameters_dict[f"Nbkg_{options.meson}_{options.polarity}"])
 Nsig_error = parameters_dict[f"Nsig_{options.meson}_{options.polarity}_error"]
 
 
-signal = RooAddPdf("signal", "signal", RooArgList(Johnson, Bifurgauss, Bifurgauss2, gauss), RooArgList(frac, frac2, frac3))
+signal = RooAddPdf("signal", "signal", RooArgList(Johnson, Bifurgauss, Bifurgauss2), RooArgList(frac, frac2))
 model = {
     "total": RooAddPdf("total", "Total", RooArgList(signal, background), RooArgList(Nsig, Nbkg)), # extended likelihood
     "signals": {
         Bifurgauss.GetName(): Bifurgauss.GetTitle(),
         Bifurgauss2.GetName(): Bifurgauss2.GetTitle(),
         Johnson.GetName(): Johnson.GetTitle(),
-        gauss.GetName(): gauss.GetTitle(),
 
     },
     "backgrounds": {
@@ -356,6 +349,14 @@ if binned:
             # for bin in range(1, D0_Hist.GetNbinsX() + 1):
             #     error = D0_Hist.GetBinError(bin)
             #     D0_Hist.SetBinError(bin, 10 * error)
+
+        error_bin_list = []
+        y_value_bin_list = []
+        for bin in range(1, D0_Hist.GetNbinsX() + 1):
+            error = D0_Hist.GetBinError(bin)
+            y_value = D0_Hist.GetBinContent(bin)
+            error_bin_list.append(error)
+            y_value_bin_list.append(y_value)
 
         frame.addTH1(D0_Hist, "pe")
         legend_entries[D0_Hist.GetName()] = {"title": D0_Hist.GetTitle(), "style": "pe"}
@@ -534,7 +535,7 @@ if binned:
         # )
         if options.scheme == "total":
             legend2 = ROOT.TLegend(
-                0.67, 0.74,0.79,0.89, "#bf{#it{"+plot_type2+"}}"
+                0.70, 0.74,0.79,0.89, "#bf{#it{"+plot_type2+"}}"
             )
         else:
             legend2 = ROOT.TLegend(
@@ -562,10 +563,10 @@ if binned:
         if Failed == 0:
             latex = ROOT.TLatex()
             latex.SetNDC()
-            latex.SetTextSize(0.056)
+            latex.SetTextSize(0.049)
             if options.scheme == "total":
-                latex.DrawLatex(0.67 ,0.70 , 'Fit \mu:  ' + str(rounded_pull_mean) + ' \pm ' + str(rounded_pull_mean_error))
-                latex.DrawLatex(0.67,0.65 , 'Fit \sigma:  ' + str(rounded_pull_std) + ' \pm ' + str(rounded_pull_std_error))
+                latex.DrawLatex(0.70 ,0.70 , 'Fit \mu:  ' + str(rounded_pull_mean) + ' \pm ' + str(rounded_pull_mean_error))
+                latex.DrawLatex(0.70,0.65 , 'Fit \sigma:  ' + str(rounded_pull_std) + ' \pm ' + str(rounded_pull_std_error))
             else:
                 latex.DrawLatex(0.64 ,0.70 , 'Fit \mu:  ' + str(rounded_pull_mean) + ' \pm ' + str(rounded_pull_mean_error))
                 latex.DrawLatex(0.64,0.65 , 'Fit \sigma:  ' + str(rounded_pull_std) + ' \pm ' + str(rounded_pull_std_error))
@@ -593,6 +594,10 @@ if binned:
             file.close()
         else:
             c.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}_fit_ANA.pdf")
+            file_error = open(f"{options.path}/error_bin_list_{options.meson}_{options.polarity}_{options.year}_{options.size}_bin{options.bin}.txt", "w+")
+            for i in range(len(error_bin_list)):
+                file_error.write(f"Bin {i+1}: Error = {error_bin_list[i]}, Y_value = {y_value_bin_list[i]}\n")
+            file_error.close()
             if Failed == 0:
                 pull_canvas.SaveAs(f"{options.path}/{options.meson}_{options.polarity}_{options.year}_{options.size}_fit_pulls.pdf")
             file = open(f"{options.path}/yields_{options.meson}_{options.polarity}_{options.year}_{options.size}.txt", "w+")
