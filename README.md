@@ -46,7 +46,7 @@ In order to use ```main_processing.sh``` 6 arguments are required. These are:
 
 Here is an example of how to call ```main_processing.sh```:
 ```
-bash main_processing.sh 2018 18 100 y Model_1
+bash main_processing.sh 2018 18 100 1 y Model_1
 ```
 ## Credits
 A large amount of the scripts uses or is inspired by the code written by Camille Jarvis-Stiggants and Michael England during their MPhys project and Marc Oriol Pérez in his summer internship. The detection asymmetry scripts used by ```HTCondor``` and the ```utils.py``` script were written by Aodhan Burke for his PhD thesis and the ```runpythia.cpp``` script was written by Suzanne Klaver for her study of the $D^\pm$ mesons.
