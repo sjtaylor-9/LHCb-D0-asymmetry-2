@@ -84,6 +84,14 @@ def parse_arguments():
         default=os.getcwd(),
         help="flag to set the path where the final asymmetries."
     )
+    parser.add_argument(
+        "--detection_scheme",
+        type=str,
+        required=True,
+        choices = ['eta', 'global', 'pT'],
+        default=os.getcwd(),
+        help="flag to set the binning scheme to be used."
+    )
     return parser.parse_args()
 
 def dir_path(string):
@@ -122,6 +130,7 @@ def read_from_file(polarity, bin_num=None, scheme=None, meson=None):
         Output: The data that is read in when this function is ran is saved to this variable.
         Output_err: This is the uncertainty that is read in when this function is ran associated with the data saved to Output.
     """
+
     if bin_num is not None:
         if meson is not None:
             with open(f'{args.model_input}/{scheme}/{bin_num}/yields_{meson}_{polarity}_{args.year}_{args.size}_bin{bin_num}.txt') as f:
@@ -131,13 +140,21 @@ def read_from_file(polarity, bin_num=None, scheme=None, meson=None):
                     Output = float(currentline[0])
                     Output_err = float(currentline[1])
                 f.close()
-        else:
-            with open(f'{args.detection_input}/{scheme}/{args.year}/{polarity}/detection_asym_{args.year}_{polarity}_bin{bin_num}.txt') as f:
+        if args.detection_scheme == 'global':
+            with open(f'{args.detection_input}/{args.detection_scheme}/{args.year}/{polarity}/detection_asym_{args.year}_{polarity}.txt') as f:
                 # Read the first line and convert to integer
                 Output = float(f.readline().strip())
                 # Read the second line and convert to integer
                 Output_err = float(f.readline().strip())
                 f.close()
+        else:
+            with open(f'{args.detection_input}/{args.detection_scheme}/{args.year}/{polarity}/detection_asym_{args.year}_{polarity}_bin{bin_num}.txt') as f:
+                # Read the first line and convert to integer
+                Output = float(f.readline().strip())
+                # Read the second line and convert to integer
+                Output_err = float(f.readline().strip())
+                f.close()
+
     else:
         if meson is not None:
             with open(f'{args.model_input}/global/yields_{meson}_{polarity}_{args.year}_{args.size}.txt') as f:
@@ -205,8 +222,8 @@ def A_Det(bin_num, scheme, A_det_up, A_det_up_err, A_det_down, A_det_down_err):
     
     if bin_num is not None:
         # Read in the detection asymmetries from the .txt files outputted from detection_asym.py
-        A_det_up, A_det_up_err = read_from_file('up', bin_num, scheme)
-        A_det_down, A_det_down_err = read_from_file('down', bin_num, scheme)
+        A_det_up, A_det_up_err = read_from_file('up', bin_num, scheme, detection_scheme)
+        A_det_down, A_det_down_err = read_from_file('down', bin_num, scheme, detection_scheme)
 
     # Total detection asymmetry is the arithmetic mean of the up/down asymmetries and the total uncertainty is the up/down uncertainties in quadrature
     A_det = (A_det_up + A_det_down) / 2
@@ -259,7 +276,7 @@ def output_results(A_raw, A_raw_err, bin_num, A_prod, A_prod_err):
     print("------------------------------")
     
     array = np.array([A_prod, A_prod_err, A_raw, A_raw_err])
-    np.savetxt(f"{args.path}/asymmetries_{args.year}_{args.size}_bin{bin_num}.txt", array)
+    np.savetxt(f"{args.path}/asymmetries_{args.year}_{args.size}_bin{bin_num}_detection_scheme_{args.detection_scheme}.txt", array)
 
 def production_asymm(raw_asym, raw_error, detection_asym, detection_error):
     """
@@ -331,7 +348,7 @@ def A_prod_unbinned():
 # - - - - - - - MAIN CODE - - - - - - - - - #
 args = parse_arguments()
 scheme = args.scheme
-
+detection_scheme = args.scheme
 A_prod_list = []
 A_prod_err_list = []
 
@@ -409,9 +426,9 @@ print(f"The 20{args.year} global bin-integrated production asymmetry is: ", roun
 
 array = np.array([Aprod_unbinned[0], 
                   Aprod_unbinned[1]])
-np.savetxt(f"{args.results_path}/final_asymmetries_{args.scheme}_{args.year}_{args.size}.txt", array)
+np.savetxt(f"{args.results_path}/final_asymmetries_{args.scheme}_{args.year}_{args.size}_detection_scheme_{args.scheme}.txt", array)
 
-file_path = f"{args.results_path}/final_text_asymmetries_{args.scheme}_{args.year}_{args.size}.txt"
+file_path = f"{args.results_path}/final_text_asymmetries_{args.scheme}_{args.year}_{args.size}_detection_scheme_{args.scheme}.txt"
 
 with open(file_path, "w") as file:
     text = (f'A_prod_integrated: {round(Aprod_unbinned[0], 3)}\n'
