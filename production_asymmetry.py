@@ -84,6 +84,14 @@ def parse_arguments():
         default=os.getcwd(),
         help="flag to set the path where the final asymmetries."
     )
+    parser.add_argument(
+        "--detection_scheme",
+        type=str,
+        required=True,
+        choices = ['eta', 'global', 'pT'],
+        default=os.getcwd(),
+        help="flag to set the binning scheme to be used."
+    )
     return parser.parse_args()
 
 def dir_path(string):
@@ -126,24 +134,34 @@ def read_from_file(polarity, bin_num=None, scheme=None, meson=None):
         if meson is not None:
             with open(f'{args.model_input}/{scheme}/{bin_num}/yields_{meson}_{polarity}_{args.year}_{args.size}_bin{bin_num}.txt') as f:
                 for line in f:
-                    # The output of the .txt file is in the format signal_yield, signal_yield_err % so the signal yield is element 0  and uncertainty is element 1
+                    # The output of the .txt file is in the format signal_yield, signal_yield_err so the signal yield is element 0  and uncertainty is element 1
                     currentline = line.split(",")
                     Output = float(currentline[0])
                     Output_err = float(currentline[1])
                 f.close()
         else:
-            with open(f'{args.detection_input}/{scheme}/{args.year}/{polarity}/detection_asym_{args.year}_{polarity}_bin{bin_num}.txt') as f:
-                for line in f:
-                    # The output of the .txt file is in the format Adet +/- Adet_err % so Adet is element 0  and Adet_err is element 2
-                    currentline = line.split()
-                    Output = float(currentline[0])
-                    Output_err = float(currentline[2])
-                f.close()
+            if args.detection_scheme == 'global':
+                with open(f'{args.detection_input}/{args.detection_scheme}/{args.year}/{polarity}/detection_asym_{args.year}_{polarity}.txt') as f:
+                    for line in f:
+                        # The output of the .txt file is in the format Adet +/- Adet_err % so Adet is element 0  and Adet_err is element 2
+                        currentline = line.split()
+                        Output = float(currentline[0])
+                        Output_err = float(currentline[2])
+                    f.close()
+            else:
+                with open(f'{args.detection_input}/{args.detection_scheme}/{args.year}/{polarity}/detection_asym_{args.year}_{polarity}_bin{bin_num}.txt') as f:
+                    for line in f:
+                        # The output of the .txt file is in the format Adet +/- Adet_err % so Adet is element 0  and Adet_err is element 2
+                        currentline = line.split()
+                        Output = float(currentline[0])
+                        Output_err = float(currentline[2])
+                    f.close()
+
     else:
         if meson is not None:
             with open(f'{args.model_input}/global/yields_{meson}_{polarity}_{args.year}_{args.size}.txt') as f:
                 for line in f:
-                    # The output of the .txt file is in the format signal_yield, signal_yield_err % so the signal yield is element 0  and uncertainty is element 1
+                    # The output of the .txt file is in the format signal_yield, signal_yield_err so the signal yield is element 0  and uncertainty is element 1
                     currentline = line.split(",")
                     Output = float(currentline[0])
                     Output_err = float(currentline[1])
@@ -238,10 +256,8 @@ def calculate_raw_asymmetry(yeild_D0, yield_D0bar, bin_width, N_D0_err, N_D0bar_
     N_D0 = abs(yeild_D0)/abs(bin_width)
     N_D0bar = abs(yield_D0bar)/abs(bin_width)
     A = (N_D0 - N_D0bar)/(N_D0 + N_D0bar)
-    
     # Calculates the uncertainty on the raw asymmetry
     A_err = 2*(((N_D0bar**2)*(N_D0_err**2) + (N_D0**2)*(N_D0bar_err**2))**0.5)*((N_D0 + N_D0bar)**(-2))
-          
     return 100*A, 100*A_err
 
 def output_results(A_raw, A_raw_err, bin_num, A_prod, A_prod_err):
@@ -261,7 +277,7 @@ def output_results(A_raw, A_raw_err, bin_num, A_prod, A_prod_err):
     print("------------------------------")
     
     array = np.array([A_prod, A_prod_err, A_raw, A_raw_err])
-    np.savetxt(f"{args.path}/asymmetries_{args.year}_{args.size}_bin{bin_num}.txt", array)
+    np.savetxt(f"{args.path}/asymmetries_{args.year}_{args.size}_bin{bin_num}_detection_scheme_{args.detection_scheme}.txt", array)
 
 def production_asymm(raw_asym, raw_error, detection_asym, detection_error):
     """
@@ -329,16 +345,15 @@ def A_prod_unbinned():
     # Calculate the global production asymmetry
     A_prod_global= production_asymm(A_raw_global, A_raw_err_global, A_det_global, A_det_err_global)
 
-    return A_prod_global
+    return A_prod_global, A_raw_global, A_raw_err_global
 # - - - - - - - MAIN CODE - - - - - - - - - #
 args = parse_arguments()
 scheme = args.scheme
-
 A_prod_list = []
 A_prod_err_list = []
 
 # Calculates the global production asymmetry
-Aprod_unbinned = A_prod_unbinned()
+Aprod_unbinned, A_raw_global, A_raw_err_global = A_prod_unbinned()
 
 if scheme == 'local':
     for j in range(0,10):
@@ -355,7 +370,6 @@ if scheme == 'local':
             # Calculating the total raw asymmetry of the bin as the arithmetic mean of the up/down asymmetries
             A_raw = (A_raw_up + A_raw_down) / 2
             A_raw_err = np.sqrt(((A_raw_up_err)**2 + (A_raw_down_err)**2)) / 2
-
             # Calculate the detection asymmetry of the bin
             A_det, A_det_err = A_Det(bin_num=bin_num, 
                                      scheme=scheme,
@@ -386,7 +400,6 @@ elif scheme == 'pT' or scheme == 'eta':
         # Calculating the total raw asymmetry of the bin as the arithmetic mean of the up/down asymmetries
         A_raw = (A_raw_up + A_raw_down) / 2
         A_raw_err = np.sqrt(((A_raw_up_err)**2 + (A_raw_down_err)**2)) /2
-
         # Calculate the detection asymmetry of the bin
         A_det, A_det_err = A_Det(bin_num=bin_num, 
                                      scheme=scheme,
@@ -406,13 +419,14 @@ elif scheme == 'pT' or scheme == 'eta':
         A_prod_err_list.append(A_prod_bin[1])
 
 # Saves the global bin-integrated production asymmetry to a .txt file
+print(f"The 20{args.year} global bin-integrated raw asymmetry is: ", round(A_raw_global ,3), "% +/-", round(A_raw_err_global, 3), '%')
 print(f"The 20{args.year} global bin-integrated production asymmetry is: ", round(Aprod_unbinned[0],3), "% +/-", round(Aprod_unbinned[1], 3), '%')
 
 array = np.array([Aprod_unbinned[0], 
                   Aprod_unbinned[1]])
-np.savetxt(f"{args.results_path}/final_asymmetries_{args.scheme}_{args.year}_{args.size}.txt", array)
+np.savetxt(f"{args.results_path}/final_asymmetries_{args.scheme}_{args.year}_{args.size}_detection_scheme_{args.scheme}.txt", array)
 
-file_path = f"{args.results_path}/final_text_asymmetries_{args.scheme}_{args.year}_{args.size}.txt"
+file_path = f"{args.results_path}/final_text_asymmetries_{args.scheme}_{args.year}_{args.size}_detection_scheme_{args.scheme}.txt"
 
 with open(file_path, "w") as file:
     text = (f'A_prod_integrated: {round(Aprod_unbinned[0], 3)}\n'
