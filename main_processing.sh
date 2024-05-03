@@ -108,7 +108,18 @@ python production_asymmetry.py \
     --model_input $directory"/model_fitting" \
     --scheme 'pT' \
     --detection_input "Adet/Outputs" \
-    --results_path $directory"/results"
+    --results_path $directory"/results" \
+    --detection_scheme "pT"
+
+python production_asymmetry.py \
+    --year $year \
+    --size $size \
+    --path $directory"/asymmetry/pT" \
+    --model_input $directory"/model_fitting" \
+    --scheme 'pT' \
+    --detection_input "Adet/Outputs" \
+    --results_path $directory"/results" \
+    --detection_scheme "global"
 
 python production_asymmetry.py \
     --year $year \
@@ -117,7 +128,18 @@ python production_asymmetry.py \
     --model_input $directory"/model_fitting" \
     --scheme 'eta' \
     --detection_input "Adet/Outputs" \
-    --results_path $directory"/results"
+    --results_path $directory"/results" \
+    --detection_scheme "eta"
+
+python production_asymmetry.py \
+    --year $year \
+    --size $size \
+    --path $directory"/asymmetry/eta" \
+    --model_input $directory"/model_fitting" \
+    --scheme 'eta' \
+    --detection_input "Adet/Outputs" \
+    --results_path $directory"/results" \
+    --detection_scheme "global"
 
 python plot_pT_eta.py \
     --year $year \
