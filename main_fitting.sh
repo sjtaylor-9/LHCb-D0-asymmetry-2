@@ -68,7 +68,7 @@ for ind in {0..99}; do
         --size $size \
         --path $directory"/model_fitting/local/"$index \
         --binned_fit $binned \
-        --input "/eos/lhcb/user/l/lseelan/Total/binned_data/"$year/"local" \
+        --input $directory"/binned_data/local" \
         --bin $index \
         --scheme 'pT_eta' \
         --initial_guess_path $directory"/model_fitting"
@@ -85,7 +85,7 @@ for meson in D0 D0bar; do
                 --meson $meson \
                 --polarity $polar  \
                 --path $directory"/model_fitting/local/"$index \
-                --input "/eos/lhcb/user/l/lseelan/Total/binned_data/"$year/"local" \
+                --input $directory"/binned_data/local" \
                 --parameters_path $directory"/model_fitting/local/"$index \
                 --bin $index \
                 --binned_fit $binned \
@@ -97,14 +97,14 @@ done
 echo "Plotted the local models in the 100 (pT, eta) bins"
 
 # Perform the local fits in the individual 10 pT and eta bins
-for ind in {2..3}; do
+for ind in {0..9}; do
     index=$( printf '%01d' $ind)
     python fit_global.py \
         --year $year \
         --size $size \
         --path $directory"/model_fitting/pT/"$index \
         --binned_fit $binned \
-        --input "/eos/lhcb/user/l/lseelan/Total/binned_data/"$year/"pT" \
+        --input $directory"/binned_data/pT" \
         --bin $index \
         --scheme 'pT'
     python fit_global.py \
@@ -112,7 +112,7 @@ for ind in {2..3}; do
         --size $size \
         --path $directory"/model_fitting/eta/"$index \
         --binned_fit $binned \
-        --input "/eos/lhcb/user/l/lseelan/Total/binned_data/"$year/"eta" \
+        --input $directory"/binned_data/eta" \
         --bin $index \
         --scheme 'eta'
     echo "Fitted Bin "$index
@@ -128,7 +128,7 @@ for meson in D0 D0bar; do
                 --meson $meson \
                 --polarity $polar  \
                 --path $directory"/model_fitting/pT/"$index \
-                --input "/eos/lhcb/user/l/lseelan/Total/binned_data/"$year/"pT" \
+                --input $directory"/binned_data/pT" \
                 --parameters_path $directory"/model_fitting/pT/"$index \
                 --bin $index \
                 --binned_fit $binned \
@@ -138,7 +138,7 @@ for meson in D0 D0bar; do
                 --size $size --meson $meson \
                 --polarity $polar  \
                 --path $directory"/model_fitting/eta/"$index \
-                --input "/eos/lhcb/user/l/lseelan/Total/binned_data/"$year/"eta" \
+                --input $directory"/binned_data/eta" \
                 --parameters_path $directory"/model_fitting/eta/"$index \
                 --bin $index \
                 --binned_fit $binned \
