@@ -16,8 +16,6 @@ import numpy as np
 import csv
 import pandas as pd
 import glob
-
-
 # - - - - - - - - FUNCTIONS - - - - - - - - #
 
 def parse_arguments():
