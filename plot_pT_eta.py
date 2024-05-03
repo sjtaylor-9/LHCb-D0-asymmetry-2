@@ -184,56 +184,9 @@ if args.scheme == 'pT':
 ##########
 bins = len(x_value)
 
-# initialise globally so can print after
-store = {}
-def get_chi2(c: float):
-    chi2 = 0.
-    ndof = -1 # 1 for c
-
-    for i in range(bins):
-        if asymmetry_error[i] == 0:
-            continue
-
-        pol0 = c
-        residual = (asymmetry[i] - pol0) / asymmetry_error[i]
-
-        chi2 += residual * residual
-        ndof += 1
-    
-    store["chi2"] = chi2
-    store["ndof"] = ndof
-
-    return chi2
-
-
-
-m = Minuit(get_chi2, c=0) # 0 is initial guess
-result = m.migrad()
-values = list(m.values)
-errors = list(m.errors)
-prob = 1 - chi2.cdf(store["chi2"], store["ndof"])
-
-result_string = "\n".join((
-    rf"$c = {values[0]:.3f} \pm {errors[0]:.3f}, m=0$",
-    rf"$\chi^{{2}} / $nDOF$ = {store['chi2']:.2f} / {store['ndof']}$",
-    rf"$p = {prob*100:.1f} \%$"
-))
-
-_, ax = plt.subplots()
-
-ax.errorbar(x_value, asymmetry, yerr=asymmetry_error, fmt="k.", label="data")
-ax.plot(x_value,[values[0] for _ in range(bins)],color="b", label="fit")
-# ax.text(0.55, 0.1, result_string, transform=ax.transAxes, fontsize=30)
-ax.set_xlabel(r"$p_T$ [GeV$/c$]")
-ax.set_ylabel("Production asymmetry")
-ax.legend(loc="best")
-plt.savefig("asym_flatness.pdf", bbox_inches="tight")
-
-
-###################
-
 # Plotting
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(15, 12), sharex=True, gridspec_kw={'height_ratios': [3, 1]})
+fig = plt.figure()
+ax1 = fig.gca()
 
 ax1.set_ylabel(r'$A_{\mathrm{prod}}$ [%]', fontsize = 50)
 ax1.tick_params(axis='both', which='both', labelsize=30)
@@ -255,35 +208,14 @@ extra = Rectangle((0, 0), 1, 1, fc="green", fill=True, edgecolor='none', linewid
 # Fit = ax.axhline(values[0], color='purple', linestyle=':', linewidth=5)
 
 if args.scheme == 'pT':
-    ax1.legend([(line2,fill2),Data, extra],[r'Bin integrated result','Data','Pythia'])#, loc='upper right')
+    ax1.legend([(line2,fill2),Data, extra],[r'Bin integrated result','Data','Pythia'], loc='upper left')
 elif args.scheme == 'eta':
-    ax1.legend([(line2,fill2),Data, extra],[r'Bin integrated result','Data','Pythia'])#,='upper right')
-
-file_path = f"{args.path}/result_of_fit.txt"
-with open(file_path, "w") as file:
-  file.write(f"{result_string}")
-
-ratio = (simulated_asymmetry / asymmetry)
-ratio_error = np.sqrt((simulated_asymmetry_error/asymmetry)**2 + ((simulated_asymmetry*asymmetry_error)/(asymmetry)**2)**2)
-
-# Plot residuals against observed data with error bars
-for i, (x, y, xerr, yerr) in enumerate(zip(x_value, ratio, x_value_error, ratio_error)):
-    color = 'black' if (y + yerr < 1) and (y - yerr < 1) else 'black'
-    ax2.errorbar(x, y, xerr=xerr, yerr=yerr, fmt='o', color=color)
-
-# ax2.errorbar(x_value, ratio, xerr=x_value, yerr=ratio_error, fmt='o', color='black')
-
-ax2.axhline(y=1, color='grey', linestyle='--') 
-# ax2.axhline(y=0, color='grey', linestyle='--')  
-# ax2.axhline(y=-3, color='red', linestyle='--')  
+    ax1.legend([(line2,fill2),Data, extra],[r'Bin integrated result','Data','Pythia'], loc='best')
 
 if args.scheme == 'pT':
-    ax2.set_xlabel(r'$p_{T}$ [GeV$c^{-1}$]', fontsize = 50)
+    ax1.set_xlabel(r'$p_{T}$ [GeV$c^{-1}$]', fontsize = 50)
 elif args.scheme == 'eta':
-    ax2.set_xlabel(r'$\eta$', fontsize = 50)
-ax2.set_ylabel(r'Ratio [Pythia/asymmetry]', fontsize = 50)
-
-
+    ax1.set_xlabel(r'$\eta$', fontsize = 50)
 
 if args.scheme == 'pT':
     plt.savefig(f'{args.path}/pT_Asymm_{args.year}_{args.size}.pdf', bbox_inches = "tight")
@@ -296,7 +228,6 @@ min_value_asymmetry = min(asymmetry.min(), simulated_asymmetry.min())
 max_value_asymmetry = max(asymmetry.max(), simulated_asymmetry.max())
 print(min_value_asymmetry)
 print(max_value_asymmetry)
-
 # y axis points for plotting and evaluation of the difference
 nSamples = 10000
 yKS = np.linspace(min_value_asymmetry, max_value_asymmetry, nSamples+1)
@@ -310,29 +241,51 @@ dKS = [abs(x-y) for x,y in zip(cKS1, cKS2)]
 # plotting just cdf
 
 fig,ax = plt.subplots(2,1,figsize=(16, 8))
-ax[0].plot(yKS,cKS1)
-ax[0].plot(yKS,cKS2)
-ax[1].plot(yKS,dKS)
+
+ax[0].plot(yKS,cKS1, label = 'Measured Data')
+ax[0].plot(yKS,cKS2, label = 'Simulated Data')
+ax[1].plot(yKS,dKS, color = "green", label = r'$\Delta$ CDF')
 # Add more ticks on the y-axis
-ax[0].set_yticks(np.arange(0, 1 + 0.1, 0.2))
-ax[1].set_yticks(np.arange(0, max(dKS) + 0.1, 0.1))
+ax[0].set_yticks(np.arange(0, 1 + 0.2, 0.25))
+ax[1].set_yticks(np.arange(0, max(dKS) + 0.2, 0.25))
 # Add more ticks on the x-axis
 ax[0].set_xticks(np.arange(round(min_value_asymmetry,1)-0.1, round(max_value_asymmetry,1) + 0.1, 0.2))
 ax[1].set_xticks(ax[0].get_xticks())
-ax[0].set_ylabel('Cumulative Distribution Frequency')
-ax[1].set_xlabel('Production Asymmetry')
-ax[1].set_ylabel(r'{/delta} CDF ')
+ax[0].set_ylabel(r'CDF',fontsize=50)
+ax[1].set_xlabel(r'Production Asymmetry [%]',fontsize=50)
+ax[1].set_ylabel(r'|$\Delta$ CDF| ',fontsize=50)
+# Adding legends
 y,x=max(zip(dKS,yKS))
-ax[1].plot(x,y, 'o')
-plt.savefig("KS-Test_y_axis.pdf",bbox_inches="tight" )
+ax[1].plot(x,y, 'o', color = 'red', label = r'Maximum $\Delta$ CDF value')
+ax[0].legend(fontsize=25, loc='best')
+ax[1].legend(fontsize=25, loc='best')
+if args.scheme == 'pT':
+    plt.savefig(f'{args.path}/pT_KS-Test CDF and DeltaCDF.pdf', bbox_inches = "tight")
+elif args.scheme == 'eta':
+    plt.savefig(f'{args.path}/eta_KS-Test CDF and DeltaCDF.pdf.pdf', bbox_inches = "tight")
 
 # print output
 n1 = len(asymmetry)
 n2 = len(simulated_asymmetry)
-print('The KS test output for {0} and {1} entries is D={2:.3f} and d={3:.3f}.'.format(n1, n2, max(dKS), max(dKS)*(n1*n2/(n1+n2))**0.5))
-
+# Calculate KS test statistic and p-value
 ks_statistic, p_value = ks_2samp(asymmetry, simulated_asymmetry)
 
-# Print the test statistic and p-value
-print("Test Statistic:", ks_statistic)
-print("p-value:", p_value)
+# Open a text file in write mode
+if args.scheme == 'pT':
+    filename_text_output = f'{args.path}/eta_KS-Test CDF and DeltaCDF.txt'
+elif args.scheme == 'eta':
+    filename_text_output = f'{args.path}/pT_KS-Test CDF and DeltaCDF.txt'
+    
+with open(filename_text_output, "w") as f:
+    # Write the test statistic and p-value to the file
+    f.write("KS-Test Statistic from scipy: {}\n".format(ks_statistic))
+    f.write("p-value from scipy: {}\n".format(p_value))
+
+    # Print the test statistic and p-value to console
+    print("KS-Test Statistic from scipy:", ks_statistic)
+    print("p-value from scipy:", p_value)
+
+    # Print the KS test output to console and write it to the file
+    output = "The KS test output for {0} and {1} entries is D={2:.3f} and d={3:.3f}.\n".format(n1, n2, max(dKS), max(dKS)*(n1*n2/(n1+n2))**0.5)
+    print(output)
+    f.write(output)

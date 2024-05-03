@@ -9,15 +9,15 @@ mkdir $directory"/binned_data/local"
 mkdir $directory"/binned_data/pT"
 mkdir $directory"/binned_data/eta"
 
-# These directories are made in the eos, which were used for Adet. They are not needed unless redoing Adet.
-# mkdir /eos/lhcb/user/l/lseelan/Total/binned_data/
-# mkdir /eos/lhcb/user/l/lseelan/Total/binned_data/$year
-# mkdir /eos/lhcb/user/l/lseelan/Total/binned_data/$year/local
-# mkdir /eos/lhcb/user/l/lseelan/Total/binned_data/$year/pT
-# mkdir /eos/lhcb/user/l/lseelan/Total/binned_data/$year/eta
-# mkdir /eos/lhcb/user/l/lseelan/Total/binned_data/$year/local/both
-# mkdir /eos/lhcb/user/l/lseelan/Total/binned_data/$year/pT/both
-# mkdir /eos/lhcb/user/l/lseelan/Total/binned_data/$year/eta/both
+These directories are made in the eos, which were used for Adet. They are not needed unless redoing Adet.
+mkdir /eos/lhcb/user/l/lseelan/Total/binned_data/
+mkdir /eos/lhcb/user/l/lseelan/Total/binned_data/$year
+mkdir /eos/lhcb/user/l/lseelan/Total/binned_data/$year/local
+mkdir /eos/lhcb/user/l/lseelan/Total/binned_data/$year/pT
+mkdir /eos/lhcb/user/l/lseelan/Total/binned_data/$year/eta
+mkdir /eos/lhcb/user/l/lseelan/Total/binned_data/$year/local/both
+mkdir /eos/lhcb/user/l/lseelan/Total/binned_data/$year/pT/both
+mkdir /eos/lhcb/user/l/lseelan/Total/binned_data/$year/eta/both
 
 # Size 10: lowest. Size 20: twice as big and includes data from Size 10
 
@@ -51,19 +51,5 @@ done
 
 echo "The data has been binned"
 echo
-
-echo "Applying binning scheme independent of meson flavour, needed for Adet"
-for polarity in up down; do    
-    python apply_binning_scheme.py \
-        --year $year \
-        --size $size \
-        --meson 'both' \
-        --polarity $polarity \
-        --path $directory"/binned_data" \
-        --input "/eos/lhcb/user/l/lseelan/Total/selected_data" \
-        --bin_path $directory"/binned_data/binning_scheme"
-done
-
-echo "The data has been binned, Adet"
 
     

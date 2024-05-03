@@ -113,7 +113,7 @@ def read_from_file():
                     Araw_dict[mode] = Araw
                     Araw_err_dict[mode] = Araw_err
         else:
-            with open(f'{args.input}/{args.scheme}/20{args.year}/mag{args.polarity}/{args.bin}/{mode}/output_{mode}.txt') as f:
+            with open(f'{args.input}/{args.scheme}_set_params/20{args.year}/mag{args.polarity}/{args.bin}/{mode}/output_{mode}.txt') as f:
                 for line in f:
                     # The output of the .txt file is in the format Araw +/- Araw_err % so Araw is element 0  and Araw_err is element 2
                     currentline = line.split()
@@ -144,7 +144,7 @@ def calculate_detection_asym(A_kpipi, A_kpipi_err, A_kspi, A_kspi_err):
     Adet_err_k0 = 0.014
 
     # Calculate the kpi detection asymmetry and the associated error in quadrature
-    Adet = A_kpipi - A_kspi - Adet_k0
+    Adet = A_kpipi - A_kspi + Adet_k0
     Adet_err = np.sqrt(((A_kpipi_err)**2+(A_kspi_err)**2+(Adet_err_k0)**2))
     
     return Adet, Adet_err
@@ -162,16 +162,18 @@ def output_results(Adet, uncertainty):
         # Print the detection asymmetry rounded to 3 sf
         asymmetry = str(round(Adet, 3)) + ' +/- ' + str(round(uncertainty, 3))
         print(f'The global 20{args.year} Mag{args.polarity} detection asymmetry is:', asymmetry)
+
         # Save the detection asymmetry and its error to a .txt file
-        array = np.array([Adet, uncertainty])
-        np.savetxt(f"{args.path}/detection_asym_{args.year}_{args.polarity}.txt", array)
+        with open(f"{args.path}/detection_asym_{args.year}_{args.polarity}.txt", "w") as file:
+            file.write(asymmetry)
     else:
         # Print the detection asymmetry rounded to 3 sf
         asymmetry = str(round(Adet, 3)) + ' +/- ' + str(round(uncertainty, 3))
         print(f'The 20{args.year} Mag{args.polarity} detection asymmetry of bin {args.bin} in the {args.scheme} binning scheme is:', asymmetry)
+
         # Save the detection asymmetry and its error to a .txt file
-        array = np.array([Adet, uncertainty])
-        np.savetxt(f"{args.path}/detection_asym_{args.year}_{args.polarity}_bin{args.bin}.txt", array)
+        with open(f"{args.path}/detection_asym_{args.year}_{args.polarity}_bin{args.bin}.txt", "w") as file:
+            file.write(asymmetry)
 # - - - - - - - MAIN BODY - - - - - - - - - #
 
 args = parse_arguments()
